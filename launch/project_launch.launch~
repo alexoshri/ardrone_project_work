@@ -1,0 +1,4 @@
+<launch>
+  <node name="keyboard_controller" pkg="ardrone_project" type="keyboard_controller.py" output="screen">
+  </node>
+</launch>

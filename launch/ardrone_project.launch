@@ -1,0 +1,10 @@
+<launch>
+  <node name="keyboard_controller" pkg="ardrone_project" type="keyboard_controller.py" output="screen">
+  </node>
+  <node name="drone_controller" pkg="ardrone_project" type="drone_controller.py" output="screen">
+  </node>
+  <node name="image_converter" pkg="ardrone_project" type="image_converter.py" output="screen">
+  </node>
+  <node name="follow_controller" pkg="ardrone_project" type="follow_controller.py" output="screen">
+  </node>
+</launch>

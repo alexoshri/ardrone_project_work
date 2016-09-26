@@ -1,0 +1,5 @@
+<launch>
+  <arg name="droneip" default="192.168.1.1" />
+  <node name="keyboard_controller" pkg="ardrone_project" type="keyboard_controller" output="screen">
+  </node>
+</launch>
