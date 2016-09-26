@@ -14,10 +14,10 @@ class follow_controller:
 
         rospy.init_node('follow_controller',anonymous = False)
         self._pubCommand = rospy.Publisher('drone_controller/com', String ,queue_size = 20)
-        self._rateCommand = rospy.Rate(2.0)
+        self._rateCommand = rospy.Rate(1.4)
         self._rateHoriz = rospy.Rate(1.8)
         self._rateHover = rospy.Rate(2.6)  # 5Hz
-        self._rateForward = rospy.Rate(1.0)
+        self._rateForward = rospy.Rate(0.7)
 
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
         rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 controller._pubCommand.publish(command)
                 controller._rateHover.sleep()
 
-                angular_vel = 0.07 * controller.img_calc.angle
+                angular_vel = 0.04 * controller.img_calc.angle
                 if angular_vel > 1: angular_vel = 1.0
                 if angular_vel < -1: angular_vel = -1.0
                 command = "SET_VELOCITY 0 0 0 0 0 {}".format(angular_vel)
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
                 if controller.img_calc.distance < 150 and controller.img_calc.angle < 5:
 		    print "MOVING FORWARD!"
-                    command = "SET_VELOCITY 1.0 0 0 0 0 0"
+                    command = "SET_VELOCITY 0.08 0 0 0 0 0"
                     controller._pubCommand.publish(command)
                     controller._rateForward.sleep()
 
