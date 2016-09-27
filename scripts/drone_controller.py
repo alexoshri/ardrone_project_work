@@ -21,18 +21,18 @@ droneStatus = {
 
 class droneController:
     def __init__(self):
-	self._debugCounter=0
+        self._debugCounter = 0
         self._status_debug = None
 
         self.zeroVelocity()
 
         rospy.init_node('drone_controller',anonymous = False)
-        self._pubTwist = rospy.Publisher('/cmd_vel',Twist,queue_size = 100)
+        self._pubTwist = rospy.Publisher('/cmd_vel',Twist,queue_size = 50)
         self._rateTwist = rospy.Rate(50) #50Hz
 
-        self._pubReset = rospy.Publisher('ardrone/reset',Empty,queue_size = 10)
-        self._pubTakeoff = rospy.Publisher('ardrone/takeoff',Empty,queue_size = 10)
-        self._pubLand = rospy.Publisher('ardrone/land',Empty,queue_size = 10)
+        self._pubReset = rospy.Publisher('ardrone/reset',Empty,queue_size = 1)
+        self._pubTakeoff = rospy.Publisher('ardrone/takeoff',Empty,queue_size = 1)
+        self._pubLand = rospy.Publisher('ardrone/land',Empty,queue_size = 1)
 
         rospy.Subscriber('drone_controller/com', String, self.callbackCommand)
         rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
@@ -53,26 +53,25 @@ class droneController:
         
 
     def callbackNavdata(self,navdata):
-        #print("Navdata received:")
-	if self._status_debug is not droneStatus[navdata.state]:
-		now = rospy.get_rostime()
-        	print("Drone status: " + droneStatus[navdata.state] + " Time: {} {}".format(now.secs, now.nsecs))
-                self._status_debug = droneStatus[navdata.state]
-        
-        self._droneStatus = navdata.state
-        #print("Is Flying?: " + str(self.isFlying()))
 
+        if self._status_debug is not droneStatus[navdata.state]:
+            now = rospy.get_rostime()
+            print("Drone status: " + droneStatus[navdata.state] + " Time: {} {}".format(now.secs, now.nsecs))
+
+        self._status_debug = droneStatus[navdata.state]
+        self._droneStatus = navdata.state
+
+        #print("Is Flying?: " + str(self.isFlying()))
         self._batteryPercent = navdata.batteryPercent
         if self._batteryPercent < 20: print("%Battery: " + str(navdata.batteryPercent))
 
-
-	###DEBUG check sleep doesn't block navdata subscriber callback - seems it's OK, even if controller sleeps long time between publish twist msg callbackNavdata is called 
-	#self._debugCounter = self._debugCounter+1
-	#print(self._debugCounter)
+        ###DEBUG check sleep doesn't block navdata subscriber callback - seems it's OK, even if controller sleeps long time between publish twist msg callbackNavdata is called
+        #self._debugCounter = self._debugCounter+1
+        #print(self._debugCounter)
     
     def callbackCommand(self,data):
         msg = data.data
-	now = rospy.get_rostime()
+        now = rospy.get_rostime()
         #print("drone_controller: I heard " + msg + " Time: {} {}".format(now.secs, now.nsecs)+ "\n")
         tokenList = msg.split(' ')
 
@@ -116,7 +115,6 @@ if __name__ == "__main__":
         while not rospy.is_shutdown():
             controller.publishTwist()
             controller.sleep()
-	    #print("wake-up!")
     except rospy.ROSInterruptException:
         print("droneController: ROSInterruptException")
     finally:
