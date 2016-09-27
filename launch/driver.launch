@@ -8,8 +8,11 @@
     <param name="outdoor" value="False" />
     <param name="flight_without_shell" value="True" />
     <param name="altitude_max" value="2000" />
-    <param name="altitude_min" value="1500" />
-    <param name="control_vz_max" value="2500" />
-    <param name="control_yaw" value="700" />
+    <param name="altitude_min" value="50" />
+    <param name="control_vz_max" value="2000" />
+    <param name="control_yaw" value="3" />
+    <param name="indoor_control_vz_max" value="2000" />
+    <param name="indoor_control_yaw" value="3" />
+    <param name="control_level" value="1" />
   </node>
 </launch>

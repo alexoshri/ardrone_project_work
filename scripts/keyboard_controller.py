@@ -9,8 +9,8 @@ quitChar = 'q'
 keyCommands = {
 		'i':"SET_VELOCITY 0.1 0 0 0 0 0",
 		'k':"SET_VELOCITY -0.1 0 0 0 0 0",
-		'l':"SET_VELOCITY 0 0 0 0 0 -0.001",
-		'j':"SET_VELOCITY 0 0 0 0 0 0.001",
+		'l':"SET_VELOCITY 0 0 0 0 0 -0.3",
+		'j':"SET_VELOCITY 0 0 0 0 0 0.3",
                 'h':"SET_VELOCITY 0 0 0.3 0 0 0",
                 'b':"SET_VELOCITY 0 0 -0.3 0 0 0",
                 'y':"SET_VELOCITY 0 -0.1 0 0 0 0",

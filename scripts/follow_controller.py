@@ -14,10 +14,10 @@ class follow_controller:
 
         rospy.init_node('follow_controller',anonymous = False)
         self._pubCommand = rospy.Publisher('drone_controller/com', String ,queue_size = 20)
-        self._rateCommand = rospy.Rate(1.4)
+        self._rateCommand = rospy.Rate(1.5)
         self._rateHoriz = rospy.Rate(1.8)
-        self._rateHover = rospy.Rate(2.6)  # 5Hz
-        self._rateForward = rospy.Rate(0.7)
+        self._rateHover = rospy.Rate(2.8)  # 5Hz
+        #self._rateForward = rospy.Rate(0.7)
 
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
         rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
@@ -58,8 +58,8 @@ if __name__ == "__main__":
         while not rospy.is_shutdown():
             if (controller.enableControl) and (controller.img_calc.is_visible): # if control enabled and path is visible
                 #horiz_vel = (1/1000) * controller.shift # POSITIVE velocity = move LEFT
-                x_vel = -float(controller.img_calc.arrow_x)*0.014
-                y_vel = -float(controller.img_calc.arrow_y)*0.014
+                x_vel = -float(controller.img_calc.arrow_x)*0.02
+                y_vel = -float(controller.img_calc.arrow_y)*0.02
                 if abs(x_vel) > 1 or abs(y_vel):
                     norm = (x_vel**2 + y_vel**2)**0.5
                     x_vel = x_vel/norm
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 controller._pubCommand.publish(command)
                 controller._rateHover.sleep()
 
-                angular_vel = 0.04 * controller.img_calc.angle
+                angular_vel = 0.03 * controller.img_calc.angle
                 if angular_vel > 1: angular_vel = 1.0
                 if angular_vel < -1: angular_vel = -1.0
                 command = "SET_VELOCITY 0 0 0 0 0 {}".format(angular_vel)
@@ -87,11 +87,11 @@ if __name__ == "__main__":
                 controller._pubCommand.publish(command)
                 controller._rateHover.sleep()
 
-                if controller.img_calc.distance < 150 and controller.img_calc.angle < 5:
-		    print "MOVING FORWARD!"
-                    command = "SET_VELOCITY 0.08 0 0 0 0 0"
-                    controller._pubCommand.publish(command)
-                    controller._rateForward.sleep()
+                #if controller.img_calc.distance < 150 and controller.img_calc.angle < 5:
+                    #print "MOVING FORWARD!"
+                    #command = "SET_VELOCITY 0.08 0 0 0 0 0"
+                    #controller._pubCommand.publish(command)
+                    #controller._rateForward.sleep()
 
     except rospy.ROSInterruptException:
         print("droneController: ROSInterruptException")
