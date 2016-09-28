@@ -16,8 +16,8 @@ class follow_controller:
         self._pubCommand = rospy.Publisher('drone_controller/com', String ,queue_size = 20)
         self._rateCommand = rospy.Rate(1.5)
         self._rateHoriz = rospy.Rate(1.8)
-        self._rateHover = rospy.Rate(2.8)  # 5Hz
-        #self._rateForward = rospy.Rate(0.7)
+        self._rateHover = rospy.Rate(1.5)  # 5Hz
+        self._rateForward = rospy.Rate(0.7)
 
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
         rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
@@ -68,28 +68,34 @@ if __name__ == "__main__":
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller._rateHoriz.sleep()
+                if controller.img_calc.distance > 50:
+                    dt = 0.05 * (controller.img_calc.distance/50)
+                    rospy.sleep(dt) # sleep seconds
 
                 command = "HOVER"
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller._rateHover.sleep()
 
-                angular_vel = 0.03 * controller.img_calc.angle
+                angular_vel = 0.2 * controller.img_calc.angle
                 if angular_vel > 1: angular_vel = 1.0
                 if angular_vel < -1: angular_vel = -1.0
                 command = "SET_VELOCITY 0 0 0 0 0 {}".format(angular_vel)
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller.sleep()
+                #if controller.img_calc.angle > 10:
+                 #   dt = 0.05 * (controller.img_calc.angle/10)
+                  #  rospy.sleep(dt) # sleep seconds
 
                 command = "HOVER"
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller._rateHover.sleep()
 
-                #if controller.img_calc.distance < 150 and controller.img_calc.angle < 5:
+                #if controller.img_calc.distance < 50 and controller.img_calc.angle < 5:
                     #print "MOVING FORWARD!"
-                    #command = "SET_VELOCITY 0.08 0 0 0 0 0"
+                    #command = "SET_VELOCITY 0.05 0 0 0 0 0"
                     #controller._pubCommand.publish(command)
                     #controller._rateForward.sleep()
 

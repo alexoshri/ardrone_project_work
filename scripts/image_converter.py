@@ -92,12 +92,16 @@ class image_converter:
                 h, w = line_mask.shape[:2]
                 line_yx = np.argwhere(thin_line_mask == 255)
                 pt = [h/2, w/2] # <-- the point to find
-                distance, index = spatial.KDTree(line_yx).query(pt) # distance always positive
+                distance, index = spatial.KDTree(line_yx).query(pt,50) # distance always positive
                 nearest_pt = line_yx[index] # <-- the nearest point to center of frame
+                nearest_pt, _ = kmeans(nearest_pt, 1)
+                nearest_pt = nearest_pt[0]
                 y_nearest = nearest_pt[0]
                 x_nearest = nearest_pt[1]
-                NN_indices_out = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 80)
-                NN_indices_in = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 60)
+                distance = ((x_nearest - w / 2) ** 2 + (y_nearest - h / 2) ** 2) ** 0.5
+
+                NN_indices_out = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 100)
+                NN_indices_in = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 80)
                 NN_extreme_indices = list(set(NN_indices_out) - set(NN_indices_in))
                 intersection_pixels = line_yx[NN_extreme_indices]
                 centroids, _ = kmeans(intersection_pixels, 2)
@@ -136,6 +140,8 @@ class image_converter:
 
                 cv2.circle(res1, (w / 2, h / 2), 5, (0, 0, 255), -1)
                 cv2.circle(res1, (x_nearest, y_nearest), 5, (0, 255, 0), -1)
+                cv2.circle(res1, (center2_x, center2_y), 5, (0, 255, 0), -1)
+		
                 cv2.line(res1, (x_nearest, y_nearest), (w/2, h/2), (255, 0, 0), 3)
 
                 #cv2.putText(res1, 'shift: {}'.format(horiz_dist_px), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
@@ -153,8 +159,10 @@ class image_converter:
                 img_calc.is_visible = True
                 # msg_calc.shift = horiz_dist_px
                 img_calc.distance = distance
-                img_calc.arrow_x = x_nearest - w / 2  # x grows from left to right
-                img_calc.arrow_y = y_nearest - h / 2  # y grows from top to bottom
+
+                ################################################################################
+                img_calc.arrow_x = x_nearest - w / 2  # x grows from left to right  ###x_nearest
+                img_calc.arrow_y = y_nearest - h / 2  # y grows from top to bottom  ###y_nearest
                 img_calc.angle = angle
 
             except:
