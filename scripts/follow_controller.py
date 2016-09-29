@@ -60,16 +60,16 @@ if __name__ == "__main__":
                 #horiz_vel = (1/1000) * controller.shift # POSITIVE velocity = move LEFT
                 x_vel = -float(controller.img_calc.arrow_x)*0.02
                 y_vel = -float(controller.img_calc.arrow_y)*0.02
-                if abs(x_vel) > 1 or abs(y_vel):
+                if abs(x_vel)>1 or abs(y_vel)>1:
                     norm = (x_vel**2 + y_vel**2)**0.5
                     x_vel = x_vel/norm
                     y_vel = y_vel/norm
-                command = "SET_VELOCITY {} {} 0 0 0 0".format(x_vel, y_vel)
+                command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel)
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller._rateHoriz.sleep()
                 if controller.img_calc.distance > 50:
-                    dt = 0.05 * (controller.img_calc.distance/50)
+                    dt = 0.1 * (controller.img_calc.distance/50)
                     rospy.sleep(dt) # sleep seconds
 
                 command = "HOVER"
