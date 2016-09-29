@@ -85,7 +85,7 @@ if __name__ == "__main__":
                 controller._pubCommand.publish(command)
                 controller.sleep()
                 if controller.img_calc.angle > 10:
-                    dt = 0.05 * (controller.img_calc.angle/50)
+                    dt = 0.05 * (controller.img_calc.angle/10)
                     rospy.sleep(dt) # sleep seconds
 
                 command = "HOVER"
