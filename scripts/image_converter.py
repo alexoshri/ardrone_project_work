@@ -12,6 +12,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from scipy import spatial
 from scipy.cluster.vq import vq, kmeans, whiten
+import numpy as np
 
 
 # ASSUMES BOTTOM CAMERA IS TOGGLED! 
@@ -22,6 +23,7 @@ class image_converter:
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/ardrone/bottom/image_raw_drop", Image, self.callback)  # subscribe to drop topic
 
+        self.image_pub = rospy.Publisher("image_converter/img", Image, queue_size=10)  # queue?
         self.image_pub_calc = rospy.Publisher("image_converter/calc", ImageCalc, queue_size=10)  # queue?
         self._is_visible = False
 
@@ -98,7 +100,6 @@ class image_converter:
                 nearest_pt = nearest_pt[0]
                 y_nearest = nearest_pt[0]
                 x_nearest = nearest_pt[1]
-                distance = ((x_nearest - w / 2) ** 2 + (y_nearest - h / 2) ** 2) ** 0.5
 
                 NN_indices_out = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 100)
                 NN_indices_in = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 80)
@@ -120,6 +121,13 @@ class image_converter:
                 # angle between [-90,90]
                 angle = -np.angle((center2_x - center1_x) + (center2_y - center1_y) * 1j, deg=True) - 90  # consider red/blue orientation
                 cv2.line(res1, (center1_x, center1_y), (center2_x, center2_y), (255, 0, 255), 3)
+                v = np.array([center2_y - center1_y, center2_x - center1_x])
+                P = np.array([h/2 - center1_y,w/2 - center1_y])
+                b = float(np.inner(P,v))/float(np.inner(v, v))
+                nearest_pt_on_line = [center1_y,center1_x] +  (b * v).astype(int)
+                y_nearest_pt_on_line = nearest_pt_on_line[0]
+                x_nearest_pt_on_line = nearest_pt_on_line[1]
+                distance = ((x_nearest_pt_on_line - w / 2) ** 2 + (y_nearest_pt_on_line - h / 2) ** 2) ** 0.5
 
                 #dH = 60
                 #CALCULATION METHOD 1
@@ -138,11 +146,12 @@ class image_converter:
                 #cv2.line(res1, (x_nearest_1, y_nearest + dH / 2), (x_nearest_2, y_nearest - dH / 2), (255, 0, 255), 3)
                 #angle = np.angle(x_nearest_2 - x_nearest_1 + dH * 1j, deg=True) - 90  # consider red/blue orientation
 
-                cv2.circle(res1, (w / 2, h / 2), 5, (0, 0, 255), -1)
-                cv2.circle(res1, (x_nearest, y_nearest), 5, (0, 255, 0), -1)
-                cv2.circle(res1, (center2_x, center2_y), 5, (0, 255, 0), -1)
+                #cv2.circle(res1, (w / 2, h / 2), 5, (0, 0, 255), -1)
+                #cv2.circle(res1, (x_nearest, y_nearest), 5, (0, 255, 0), -1)
+                cv2.circle(res1, (x_nearest_pt_on_line, y_nearest_pt_on_line), 5, (0, 255, 255), -1)
+                #cv2.circle(res1, (center2_x, center2_y), 5, (0, 255, 0), -1)
 		
-                cv2.line(res1, (x_nearest, y_nearest), (w/2, h/2), (255, 0, 0), 3)
+                cv2.line(res1, (x_nearest_pt_on_line, y_nearest_pt_on_line), (w/2, h/2), (255, 0, 0), 3)
 
                 #cv2.putText(res1, 'shift: {}'.format(horiz_dist_px), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
                 cv2.putText(res1, 'distance: {}'.format(distance), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
@@ -150,6 +159,7 @@ class image_converter:
                 #cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
 
+                #self.image_pub.publish(res1)
                 cv2.imshow('res1', res1)
                 # cv2.imshow('res2',res2)
                 # cv2.imshow('thin',thin_line_mask)

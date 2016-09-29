@@ -84,9 +84,9 @@ if __name__ == "__main__":
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller.sleep()
-                #if controller.img_calc.angle > 10:
-                 #   dt = 0.05 * (controller.img_calc.angle/10)
-                  #  rospy.sleep(dt) # sleep seconds
+                if controller.img_calc.angle > 10:
+                    dt = 0.05 * (controller.img_calc.angle/50)
+                    rospy.sleep(dt) # sleep seconds
 
                 command = "HOVER"
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
