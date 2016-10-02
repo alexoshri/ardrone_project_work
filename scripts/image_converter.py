@@ -70,7 +70,7 @@ class image_converter:
         chosen_cnt = None
         for h, cnt in enumerate(contours):
             (x, y), radius = cv2.minEnclosingCircle(cnt)
-            minRad = height/4
+            minRad = height/10
             if radius >= minRad:
                 chosen_cnt = cnt
 
@@ -165,8 +165,8 @@ class image_converter:
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
 
                 cv2.imshow('res1', res1)
-                # cv2.imshow('res2',res2)
-                # cv2.imshow('thin',thin_line_mask)
+                #cv2.imshow('res2',res2)
+                #cv2.imshow('thin',thin_line_mask)
                 #cv2.imshow('frame',cv_image)
                 cv2.waitKey(1)
 

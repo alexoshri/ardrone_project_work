@@ -17,7 +17,7 @@ class follow_controller:
         self._rateCommand = rospy.Rate(1.5)
         self._rateHoriz = rospy.Rate(1.8)
         self._rateHover = rospy.Rate(1.5)  # 5Hz
-        self._rateForward = rospy.Rate(0.7)
+        self._rateForward = rospy.Rate(1)
 
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
         rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
@@ -39,9 +39,9 @@ class follow_controller:
         """
         self.img_calc = data
         if self.enableControl == True and self.img_calc.is_visible == False: #if control enables and path is not visible
-            command = "LAND"
+            command = "HOVER"
             #print("follow_cntroller: " + command + "\n")
-            controller._pubCommand.publish(command)
+            #controller._pubCommand.publish(command)
 
 
 
@@ -86,16 +86,16 @@ if __name__ == "__main__":
                 controller.sleep()
                 if controller.img_calc.angle > 10:
                     dt = 0.05 * (controller.img_calc.angle/10)
-                    rospy.sleep(dt) # sleep seconds
+                    rospy.sleep(dt) #sleep seconds
 
                 command = "HOVER"
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller._rateHover.sleep()
 
-                #if controller.img_calc.distance < 50 and controller.img_calc.angle < 5:
-                    #print "MOVING FORWARD!"
-                    #command = "SET_VELOCITY 0.05 0 0 0 0 0"
+                if controller.img_calc.distance < 50 and controller.img_calc.angle < 5:
+                    print "MOVING FORWARD!"
+                    command = "SET_VELOCITY 0.01 0 0 0 0 0"
                     #controller._pubCommand.publish(command)
                     #controller._rateForward.sleep()
 

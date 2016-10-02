@@ -55,8 +55,8 @@ class droneController:
     def callbackNavdata(self,navdata):
 
         if self._status_debug is not droneStatus[navdata.state]:
-            now = rospy.get_rostime()
-            print("Drone status: " + droneStatus[navdata.state] + " Time: {} {}".format(now.secs, now.nsecs))
+            #now = rospy.get_rostime()
+            print("Drone status: " + droneStatus[navdata.state] + "\n") # + " Time: {} {}".format(now.secs, now.nsecs))
 
         self._status_debug = droneStatus[navdata.state]
         self._droneStatus = navdata.state
@@ -72,7 +72,7 @@ class droneController:
     def callbackCommand(self,data):
         msg = data.data
         now = rospy.get_rostime()
-        #print("drone_controller: I heard " + msg + " Time: {} {}".format(now.secs, now.nsecs)+ "\n")
+        print("drone_controller: I heard " + msg + "\n") #" Time: {} {}".format(now.secs, now.nsecs)+ "\n")
         tokenList = msg.split(' ')
 
         if tokenList[0] == "SET_VELOCITY":
