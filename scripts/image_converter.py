@@ -11,6 +11,7 @@ from ardrone_project.msg import ImageCalc
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from scipy import spatial
+from scipy.ndimage.interpolation import shift
 from scipy.cluster.vq import vq, kmeans, whiten
 import numpy as np
 
@@ -26,6 +27,7 @@ class image_converter:
         self.image_pub = rospy.Publisher("image_converter/img", Image, queue_size=10)  # queue?
         self.image_pub_calc = rospy.Publisher("image_converter/calc", ImageCalc, queue_size=10)  # queue?
         self._is_visible = False
+        self._orientation_forward = np.ones((1,10), dtype=bool) #FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
 
     def callback(self, data):
         img_calc = ImageCalc()
@@ -87,22 +89,19 @@ class image_converter:
             edges = cv2.Canny(smoothed, 30, 60)
             mask_final_eroded = cv2.erode(mask_final, np.ones((40, 40), np.uint8), iterations=1)
             edges = cv2.bitwise_and(edges, edges, mask=mask_final_eroded)
-            line_mask = cv2.dilate(edges, np.ones((25, 25), np.uint8), iterations=1)
-            res2 = cv2.bitwise_and(cv_image, cv_image, mask=line_mask)
+            direction_mask = cv2.dilate(edges, np.ones((25, 25), np.uint8), iterations=1)
 
-            thin_line_mask = cv2.erode(line_mask, np.ones((25, 25), np.uint8), iterations=1)
+            thin_line_mask = cv2.erode(direction_mask, np.ones((25, 25), np.uint8), iterations=1)
 
             # calculate Nearest/Centeral point location & direction
             try:
-                h, w = line_mask.shape[:2]
+                h, w = cv_image.shape[:2]
                 line_yx = np.argwhere(thin_line_mask == 255)
                 pt = [h/2, w/2] # <-- the point to find
                 _, index = spatial.KDTree(line_yx).query(pt,50) # distance always positive
-                nearest_pt = line_yx[index] # <-- the nearest point to center of frame
+                nearest_pt = line_yx[index] # <-- the NEAREST POINT to center of frame
                 nearest_pt, _ = kmeans(nearest_pt, 1)
                 nearest_pt = nearest_pt[0]
-                y_nearest = nearest_pt[0]
-                x_nearest = nearest_pt[1]
 
                 NN_indices_out = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 100)
                 NN_indices_in = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 80)
@@ -116,16 +115,17 @@ class image_converter:
 
                 if ((center1_x - center2_x)**2 + (center1_y - center2_y)**2)**0.5 < 100: raise "Cannot find two centroids"
 
+                # This conditional swap insures the "arrow" between centroids is defined between [ -90,90 )
                 if center2_y > center1_y:
                     center2_y, center1_y = center1_y, center2_y #swap variables
                     center2_x, center1_x = center1_x, center2_x
+                if center2_y == center1_y and center1_x > center2_x:
+                    center2_y, center1_y = center1_y, center2_y #swap variables
+                    center2_x, center1_x = center1_x, center2_x
 
-                # angle calculated between arrow and the vertical axis (POSITIVE = arrow to the RIGHT)
-                # angle between [-90,90]
-                angle = -np.angle((center2_x - center1_x) + (center2_y - center1_y) * 1j, deg=True) - 90  # consider red/blue orientation
                 cv2.line(res1, (center1_x, center1_y), (center2_x, center2_y), (255, 0, 255), 3)
 
-                # calculate nearest point relative to straight line
+                # CALCULATION of nearest point relative to straight line
                 v = np.array([center2_y - center1_y, center2_x - center1_x])
                 P = np.array([h/2 - center1_y,w/2 - center1_x])
                 b = float(np.inner(P,v))/float(np.inner(v, v))
@@ -133,12 +133,51 @@ class image_converter:
                 y_nearest_pt_on_line = nearest_pt_on_line[0]
                 x_nearest_pt_on_line = nearest_pt_on_line[1]
                 distance = ((x_nearest_pt_on_line - w / 2) ** 2 + (y_nearest_pt_on_line - h / 2) ** 2) ** 0.5
+                #distance = ((center2_x - w / 2) ** 2 + (center2_y - h / 2) ** 2) ** 0.5
+
+                ### ANGLE CALCULATION
+                angle = -np.angle((center2_x - center1_x) + (center2_y - center1_y) * 1j, deg=True) - 90    # angle calculated between arrow and the vertical axis (POSITIVE = arrow to the LEFT)
+                angle_perp = angle - 90
+                perp = -np.array([np.cos(angle_perp * np.pi /180), np.sin(angle_perp * np.pi /180)])
+
+                dX = 50
+                dY = 50
+                pt_check_color = np.around(np.array([dY + 80 * perp[0],dX + 80 * perp[1]])).astype(int) # far away point on the right perpndicular
+                direction_mask = direction_mask[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
+                #croped_frame = cv_image[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
+                croped_hsv = hsv[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
+                direction_mask_yx = np.argwhere(direction_mask == 255)
+                _, index = spatial.KDTree(direction_mask_yx).query(pt_check_color,100)
+                nearest_pt_on_direction = direction_mask_yx[index]
+
+                lower_red = np.array([160, 100, 10])
+                upper_red = np.array([179, 255, 255])
+                hsv_nearest_pt_on_direction = croped_hsv[nearest_pt_on_direction[:,0],nearest_pt_on_direction[:,1],:]
+                in_range_red = np.all(np.logical_and(hsv_nearest_pt_on_direction > lower_red, hsv_nearest_pt_on_direction < upper_red),axis = 1)
+                lower_red_2 = np.array([0, 100, 10])
+                upper_red_2 = np.array([10, 255, 255])
+                in_range_red_2 = np.all(np.logical_and(hsv_nearest_pt_on_direction > lower_red_2, hsv_nearest_pt_on_direction < upper_red_2),axis=1)
+                num_red = np.count_nonzero(np.logical_or(in_range_red,in_range_red_2))
+                if num_red > 1:
+                    is_red = True
+                else:
+                    is_red = False
+
+                #TODO: add buffer
+                if not is_red: angle = angle + 180
+                if angle > 180: angle -= 360
+
+                #res2 = cv2.bitwise_and(croped_frame, croped_frame, mask=direction_mask)
+                #res2[nearest_pt_on_direction[:, 0], nearest_pt_on_direction[:, 1], :] = [255, 255, 255]
+                #cv2.circle(res2, (pt_check_color[1], pt_check_color[0]), 5, (255, 255, 255), -1)
+                #cv2.line(res2, (dX, dY), (pt_check_color[1], pt_check_color[0]), (255, 0, 0), 3)
+
 
                 #dH = 60
                 #CALCULATION METHOD 1
-                #x_mid_line = int(np.average(np.argwhere(line_mask[h / 2, :] == 255)))  ## run time error when line doesn't cross the central row in the frame
-                #x_mid_line_1 = int(np.average(np.argwhere(line_mask[h / 2 + dH / 2, :] == 255)))
-                #x_mid_line_2 = int(np.average(np.argwhere(line_mask[h / 2 - dH / 2, :] == 255)))
+                #x_mid_line = int(np.average(np.argwhere(direction_mask[h / 2, :] == 255)))  ## run time error when line doesn't cross the central row in the frame
+                #x_mid_line_1 = int(np.average(np.argwhere(direction_mask[h / 2 + dH / 2, :] == 255)))
+                #x_mid_line_2 = int(np.average(np.argwhere(direction_mask[h / 2 - dH / 2, :] == 255)))
                 #calculate distance & angle
                 #horiz_dist_px = w / 2 - x_mid_line  # POSITIVE distance = camera is RIGHT to target
                 #angle = np.angle(x_mid_line_2 - x_mid_line_1 + dH * 1j, deg=True) - 90  # consider red/blue orientation
@@ -146,8 +185,8 @@ class image_converter:
                 #cv2.line(res1, (x_mid_line_1, h / 2 + dH / 2), (x_mid_line_2, h / 2 - dH / 2), (255, 0, 0), 3)
 
                 # CALCULATION METHOD 2
-                #x_nearest_1 = int(np.average(np.argwhere(line_mask[y_nearest + dH / 2, :] == 255)))
-                #x_nearest_2 = int(np.average(np.argwhere(line_mask[y_nearest - dH / 2, :] == 255)))
+                #x_nearest_1 = int(np.average(np.argwhere(direction_mask[y_nearest + dH / 2, :] == 255)))
+                #x_nearest_2 = int(np.average(np.argwhere(direction_mask[y_nearest - dH / 2, :] == 255)))
                 #cv2.line(res1, (x_nearest_1, y_nearest + dH / 2), (x_nearest_2, y_nearest - dH / 2), (255, 0, 255), 3)
                 #angle = np.angle(x_nearest_2 - x_nearest_1 + dH * 1j, deg=True) - 90  # consider red/blue orientation
 
@@ -163,6 +202,7 @@ class image_converter:
                 cv2.putText(res1, 'angle: {0:.3f}'.format(angle), (w / 2, 50), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
                 #cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
+                cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
 
                 cv2.imshow('res1', res1)
                 #cv2.imshow('res2',res2)
@@ -175,8 +215,10 @@ class image_converter:
                 img_calc.distance = distance
 
                 ################################################################################
-                img_calc.arrow_x = x_nearest_pt_on_line - w / 2  # x grows from left to right  ###x_nearest
-                img_calc.arrow_y = y_nearest_pt_on_line - h / 2  # y grows from top to bottom  ###y_nearest
+                img_calc.arrow_x = x_nearest_pt_on_line - w / 2  # x grows from left to right
+                img_calc.arrow_y = y_nearest_pt_on_line - h / 2  # y grows from top to bottom
+                #img_calc.arrow_x = center2_x - w / 2  # x grows from left to right
+                #img_calc.arrow_y = center2_y - h / 2  # y grows from top to bottom
                 img_calc.angle = angle
 
             except:

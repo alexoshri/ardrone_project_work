@@ -54,6 +54,7 @@ class follow_controller:
 
 if __name__ == "__main__":
     controller = follow_controller()
+    Bias = 0
     try:
         while not rospy.is_shutdown():
             if (controller.enableControl) and (controller.img_calc.is_visible): # if control enabled and path is visible
@@ -64,7 +65,7 @@ if __name__ == "__main__":
                     norm = (x_vel**2 + y_vel**2)**0.5
                     x_vel = x_vel/norm
                     y_vel = y_vel/norm
-                command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel)
+                command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel + Bias, x_vel)
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller._rateHoriz.sleep()
@@ -95,9 +96,12 @@ if __name__ == "__main__":
 
                 if controller.img_calc.distance < 50 and controller.img_calc.angle < 5:
                     print "MOVING FORWARD!"
-                    command = "SET_VELOCITY 0.01 0 0 0 0 0"
+                    #command = "SET_VELOCITY 0.05 0 0 0 0 0"
                     #controller._pubCommand.publish(command)
                     #controller._rateForward.sleep()
+                    #Bias = 0.4
+                else:
+                    Bias = 0
 
     except rospy.ROSInterruptException:
         print("droneController: ROSInterruptException")

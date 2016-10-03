@@ -54,7 +54,7 @@ class image_converter:
 
         closing_b = cv2.erode(mask_b, np.ones((6, 6), np.uint8), iterations=1)
         dilation_b = cv2.dilate(closing_b, np.ones((20, 20), np.uint8), iterations=1)
-        resB = cv2.bitwise_and(cv_image, cv_image, mask=dilation_b)
+        resB = cv2.bitwise_and(cv_image, cv_image, mask=mask_b)
 
         lower_red = np.array([160, 100, 30])
         upper_red = np.array([179, 255, 150])
@@ -63,7 +63,7 @@ class image_converter:
 
         closing_r = cv2.erode(mask_r, np.ones((6, 6), np.uint8), iterations=1)
         dilation_r = cv2.dilate(closing_r, np.ones((20, 20), np.uint8), iterations=1)
-        resR = cv2.bitwise_and(cv_image, cv_image, mask=dilation_r)
+        resR = cv2.bitwise_and(cv_image, cv_image, mask=mask_r)
 
         mask_br = cv2.bitwise_and(dilation_r, dilation_b)
         mask_br = cv2.dilate(mask_br, np.ones((40, 40), np.uint8), iterations=1)
@@ -171,10 +171,10 @@ class image_converter:
                 # cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 # cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
 
-                cv2.imshow('res1', thin_line_mask)
-                cv2.imshow('res2', res2)
-                cv2.imshow('thin', resBR)
-                cv2.imshow('frame', cv_image)
+                #cv2.imshow('res1', thin_line_mask)
+                #cv2.imshow('res2', res2)
+                cv2.imshow('thin', resR)
+                #cv2.imshow('frame', cv_image)
                 cv2.waitKey(1)
 
                 img_calc.is_visible = True
