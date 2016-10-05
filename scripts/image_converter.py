@@ -144,7 +144,7 @@ class image_converter:
                 dY = 50
                 pt_check_color = np.around(np.array([dY + 80 * perp[0],dX + 80 * perp[1]])).astype(int) # far away point on the right perpndicular
                 direction_mask = direction_mask[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
-                #croped_frame = cv_image[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
+                croped_frame = cv_image[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
                 croped_hsv = hsv[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
                 direction_mask_yx = np.argwhere(direction_mask == 255)
                 _, index = spatial.KDTree(direction_mask_yx).query(pt_check_color,100)
@@ -167,10 +167,10 @@ class image_converter:
                 if not is_red: angle = angle + 180
                 if angle > 180: angle -= 360
 
-                #res2 = cv2.bitwise_and(croped_frame, croped_frame, mask=direction_mask)
-                #res2[nearest_pt_on_direction[:, 0], nearest_pt_on_direction[:, 1], :] = [255, 255, 255]
-                #cv2.circle(res2, (pt_check_color[1], pt_check_color[0]), 5, (255, 255, 255), -1)
-                #cv2.line(res2, (dX, dY), (pt_check_color[1], pt_check_color[0]), (255, 0, 0), 3)
+                res2 = cv2.bitwise_and(croped_frame, croped_frame, mask=direction_mask)
+                res2[nearest_pt_on_direction[:, 0], nearest_pt_on_direction[:, 1], :] = [255, 255, 255]
+                cv2.circle(res2, (pt_check_color[1], pt_check_color[0]), 5, (255, 255, 255), -1)
+                cv2.line(res2, (dX, dY), (pt_check_color[1], pt_check_color[0]), (255, 0, 0), 3)
 
 
                 #dH = 60
@@ -203,9 +203,10 @@ class image_converter:
                 #cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
+                cv2.putText(res1, '#is forward: {}'.format(is_red), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
 
                 cv2.imshow('res1', res1)
-                #cv2.imshow('res2',res2)
+                cv2.imshow('res2',res2)
                 #cv2.imshow('thin',thin_line_mask)
                 #cv2.imshow('frame',cv_image)
                 cv2.waitKey(1)
