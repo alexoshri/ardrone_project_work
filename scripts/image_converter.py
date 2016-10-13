@@ -161,10 +161,6 @@ class image_converter:
                 _, index = spatial.KDTree(direction_mask_yx).query(pt_check_color,200)
                 nearest_pt_on_direction = direction_mask_yx[index]
 
-                #lower_red_1 = np.array([150, 0, 0])
-                #upper_red_1 = np.array([179, 255, 255])
-                #lower_red_2 = np.array([0, 0, 0])
-                #upper_red_2 = np.array([30, 255, 255])
                 hsv_nearest_pt_on_direction = croped_hsv[nearest_pt_on_direction[:,0], nearest_pt_on_direction[:,1],:]
                 in_range_red_1 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_1, hsv_nearest_pt_on_direction <= upper_red_1),axis = 1)
                 in_range_red_2 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_2, hsv_nearest_pt_on_direction <= upper_red_2),axis=1)
