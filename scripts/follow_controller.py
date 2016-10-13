@@ -41,7 +41,7 @@ class follow_controller:
         if self.enableControl == True and self.img_calc.is_visible == False: #if control enables and path is not visible
             command = "HOVER"
             #print("follow_cntroller: " + command + "\n")
-            #controller._pubCommand.publish(command)
+            controller._pubCommand.publish(command)
 
 
 
@@ -78,10 +78,11 @@ if __name__ == "__main__":
                 controller._pubCommand.publish(command)
                 controller._rateHover.sleep()
 
+            if (controller.enableControl) and (controller.img_calc.is_visible):  # if control enabled and path is visible
                 angular_vel = 0.2 * controller.img_calc.angle
                 if angular_vel > 1: angular_vel = 1.0
                 if angular_vel < -1: angular_vel = -1.0
-                command = "SET_VELOCITY 0 0 0 0 0 {}".format(angular_vel)
+                command = "SET_VELOCITY {} 0 0 0 0 {}".format(Bias,angular_vel)
                 #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                 controller._pubCommand.publish(command)
                 controller.sleep()
@@ -94,14 +95,14 @@ if __name__ == "__main__":
                 controller._pubCommand.publish(command)
                 controller._rateHover.sleep()
 
-                if controller.img_calc.distance < 50 and controller.img_calc.angle < 5:
-                    print "MOVING FORWARD!"
-                    #command = "SET_VELOCITY 0.05 0 0 0 0 0"
-                    #controller._pubCommand.publish(command)
-                    #controller._rateForward.sleep()
-                    #Bias = 0.4
-                else:
-                    Bias = 0
+            #if controller.img_calc.distance < 50 and controller.img_calc.angle < 5:
+                #print "MOVING FORWARD!"
+                #command = "SET_VELOCITY 0.05 0 0 0 0 0"
+                #controller._pubCommand.publish(command)
+                #controller._rateForward.sleep()
+                #Bias = 0.4
+            #else:
+                #Bias = 0
 
     except rospy.ROSInterruptException:
         print("droneController: ROSInterruptException")

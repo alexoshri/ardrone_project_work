@@ -48,16 +48,23 @@ class image_converter:
 
         # find transition between BLUE and RED colours
         hsv = cv2.cvtColor(smoothed, cv2.COLOR_BGR2HSV)
-        lower_blue = np.array([110, 80, 20])
-        upper_blue = np.array([130, 255, 160])
+        lower_blue = np.array([100, 80, 0])
+        upper_blue = np.array([130, 255, 100])
         mask_b = cv2.inRange(hsv, lower_blue, upper_blue)
 
         closing_b = cv2.erode(mask_b, np.ones((6, 6), np.uint8), iterations=1)
         dilation_b = cv2.dilate(closing_b, np.ones((20, 20), np.uint8), iterations=1)
 
-        lower_red = np.array([160, 100, 30])
-        upper_red = np.array([179, 255, 150])
-        mask_r = cv2.inRange(hsv, lower_red, upper_red)
+        lower_red_1 = np.array([160, 60, 0])
+        upper_red_1 = np.array([179, 255, 200])
+        mask_r_1 = cv2.inRange(hsv, lower_red_1, upper_red_1)
+
+        lower_red_2 = np.array([0, 60, 0])
+        upper_red_2 = np.array([10, 255, 200])
+        mask_r_2 = cv2.inRange(hsv, lower_red_2, upper_red_2)
+
+        mask_r = np.logical_or(mask_r_1,mask_r_2)
+        mask_r = 255 * mask_r.astype('uint8')
 
         closing_r = cv2.erode(mask_r, np.ones((6, 6), np.uint8), iterations=1)
         dilation_r = cv2.dilate(closing_r, np.ones((20, 20), np.uint8), iterations=1)
@@ -143,22 +150,26 @@ class image_converter:
                 dX = 50
                 dY = 50
                 pt_check_color = np.around(np.array([dY + 80 * perp[0],dX + 80 * perp[1]])).astype(int) # far away point on the right perpndicular
+                mask_b_cropped = mask_b[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
+                mask_r_cropped = mask_r[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
+                mask_br_cropped = np.logical_or(mask_b_cropped,mask_r_cropped)
                 direction_mask = direction_mask[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
                 croped_frame = cv_image[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
                 croped_hsv = hsv[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
+                direction_mask = 255 * np.logical_or(direction_mask,mask_br_cropped).astype('uint8')
                 direction_mask_yx = np.argwhere(direction_mask == 255)
-                _, index = spatial.KDTree(direction_mask_yx).query(pt_check_color,100)
+                _, index = spatial.KDTree(direction_mask_yx).query(pt_check_color,200)
                 nearest_pt_on_direction = direction_mask_yx[index]
 
-                lower_red = np.array([160, 100, 10])
-                upper_red = np.array([179, 255, 255])
-                hsv_nearest_pt_on_direction = croped_hsv[nearest_pt_on_direction[:,0],nearest_pt_on_direction[:,1],:]
-                in_range_red = np.all(np.logical_and(hsv_nearest_pt_on_direction > lower_red, hsv_nearest_pt_on_direction < upper_red),axis = 1)
-                lower_red_2 = np.array([0, 100, 10])
-                upper_red_2 = np.array([10, 255, 255])
-                in_range_red_2 = np.all(np.logical_and(hsv_nearest_pt_on_direction > lower_red_2, hsv_nearest_pt_on_direction < upper_red_2),axis=1)
-                num_red = np.count_nonzero(np.logical_or(in_range_red,in_range_red_2))
-                if num_red > 1:
+                #lower_red_1 = np.array([150, 0, 0])
+                #upper_red_1 = np.array([179, 255, 255])
+                #lower_red_2 = np.array([0, 0, 0])
+                #upper_red_2 = np.array([30, 255, 255])
+                hsv_nearest_pt_on_direction = croped_hsv[nearest_pt_on_direction[:,0], nearest_pt_on_direction[:,1],:]
+                in_range_red_1 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_1, hsv_nearest_pt_on_direction <= upper_red_1),axis = 1)
+                in_range_red_2 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_2, hsv_nearest_pt_on_direction <= upper_red_2),axis=1)
+                num_red = np.count_nonzero(np.logical_or(in_range_red_1,in_range_red_2))
+                if num_red > 50:
                     is_red = True
                 else:
                     is_red = False

@@ -47,8 +47,8 @@ class image_converter:
 
         # find transition between BLUE and RED colours
         hsv = cv2.cvtColor(smoothed, cv2.COLOR_BGR2HSV)
-        lower_blue = np.array([110, 80, 20])
-        upper_blue = np.array([130, 255, 160])
+        lower_blue = np.array([100, 80, 0])
+        upper_blue = np.array([130, 255, 100])
         mask_b = cv2.inRange(hsv, lower_blue, upper_blue)
 
 
@@ -56,9 +56,16 @@ class image_converter:
         dilation_b = cv2.dilate(closing_b, np.ones((20, 20), np.uint8), iterations=1)
         resB = cv2.bitwise_and(cv_image, cv_image, mask=mask_b)
 
-        lower_red = np.array([160, 100, 30])
-        upper_red = np.array([179, 255, 150])
-        mask_r = cv2.inRange(hsv, lower_red, upper_red)
+        lower_red_1 = np.array([160, 60, 0])
+        upper_red_1 = np.array([179, 255, 200])
+        mask_r_1 = cv2.inRange(hsv, lower_red_1, upper_red_1)
+
+        lower_red_2 = np.array([0, 60, 0])
+        upper_red_2 = np.array([10, 255, 200])
+        mask_r_2 = cv2.inRange(hsv, lower_red_2, upper_red_2)
+
+        mask_r = np.logical_or(mask_r_1,mask_r_2)
+        mask_r = 255 * mask_r.astype('uint8')
 
 
         closing_r = cv2.erode(mask_r, np.ones((6, 6), np.uint8), iterations=1)
@@ -173,7 +180,7 @@ class image_converter:
 
                 #cv2.imshow('res1', thin_line_mask)
                 #cv2.imshow('res2', res2)
-                cv2.imshow('thin', resR)
+                cv2.imshow('thin', resB)
                 #cv2.imshow('frame', cv_image)
                 cv2.waitKey(1)
 
