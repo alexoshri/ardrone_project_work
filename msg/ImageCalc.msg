@@ -5,4 +5,5 @@ float32 angle
 float32 distance
 int32 arrow_x
 int32 arrow_y
-
+int32 arrow_x_forward
+int32 arrow_y_forward

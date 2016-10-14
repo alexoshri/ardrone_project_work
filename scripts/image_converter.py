@@ -16,7 +16,9 @@ from scipy.cluster.vq import vq, kmeans, whiten
 import numpy as np
 
 
-# ASSUMES BOTTOM CAMERA IS TOGGLED! 
+# ASSUMES BOTTOM CAMERA IS TOGGLED!
+# ASSUMES RED ON RIGHT WHEN STARTED
+# TODO: write initialization process to determine initial orientation
 # camera channel is 1
 
 class image_converter:
@@ -27,7 +29,7 @@ class image_converter:
         self.image_pub = rospy.Publisher("image_converter/img", Image, queue_size=10)  # queue?
         self.image_pub_calc = rospy.Publisher("image_converter/calc", ImageCalc, queue_size=10)  # queue?
         self._is_visible = False
-        self._orientation_forward = np.ones((1,10), dtype=bool) #FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
+        self._orientation_forward = True#np.ones((1,10), dtype=bool) #FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
 
     def callback(self, data):
         img_calc = ImageCalc()
@@ -55,12 +57,12 @@ class image_converter:
         closing_b = cv2.erode(mask_b, np.ones((6, 6), np.uint8), iterations=1)
         dilation_b = cv2.dilate(closing_b, np.ones((20, 20), np.uint8), iterations=1)
 
-        lower_red_1 = np.array([160, 60, 0])
-        upper_red_1 = np.array([179, 255, 200])
+        lower_red_1 = np.array([160, 150, 0])
+        upper_red_1 = np.array([179, 255, 150])
         mask_r_1 = cv2.inRange(hsv, lower_red_1, upper_red_1)
 
-        lower_red_2 = np.array([0, 60, 0])
-        upper_red_2 = np.array([10, 255, 200])
+        lower_red_2 = np.array([0, 150, 0])
+        upper_red_2 = np.array([10, 255, 150])
         mask_r_2 = cv2.inRange(hsv, lower_red_2, upper_red_2)
 
         mask_r = np.logical_or(mask_r_1,mask_r_2)
@@ -92,7 +94,7 @@ class image_converter:
             mask_final = mask_final[:, :, 0]
             res1 = cv2.bitwise_and(cv_image, cv_image, mask=mask_final) # res1 is red/blue band including floor margins
 
-            # cut red/blue line from the band - to determine forward/backward direction
+            # cut red/blue mask from the band - to determine forward/backward direction
             edges = cv2.Canny(smoothed, 30, 60)
             mask_final_eroded = cv2.erode(mask_final, np.ones((40, 40), np.uint8), iterations=1)
             edges = cv2.bitwise_and(edges, edges, mask=mask_final_eroded)
@@ -100,12 +102,13 @@ class image_converter:
 
             thin_line_mask = cv2.erode(direction_mask, np.ones((25, 25), np.uint8), iterations=1)
 
-            # calculate Nearest/Centeral point location & direction
+            # calculate target point location & direction
+            # NOTE - frame coordinates: x grows from left to right, y grows from top to bottom
             try:
                 h, w = cv_image.shape[:2]
                 line_yx = np.argwhere(thin_line_mask == 255)
                 pt = [h/2, w/2] # <-- the point to find
-                _, index = spatial.KDTree(line_yx).query(pt,50) # distance always positive
+                _, index = spatial.KDTree(line_yx).query(pt,50)
                 nearest_pt = line_yx[index] # <-- the NEAREST POINT to center of frame
                 nearest_pt, _ = kmeans(nearest_pt, 1)
                 nearest_pt = nearest_pt[0]
@@ -130,8 +133,6 @@ class image_converter:
                     center2_y, center1_y = center1_y, center2_y #swap variables
                     center2_x, center1_x = center1_x, center2_x
 
-                cv2.line(res1, (center1_x, center1_y), (center2_x, center2_y), (255, 0, 255), 3)
-
                 # CALCULATION of nearest point relative to straight line
                 v = np.array([center2_y - center1_y, center2_x - center1_x])
                 P = np.array([h/2 - center1_y,w/2 - center1_x])
@@ -139,10 +140,8 @@ class image_converter:
                 nearest_pt_on_line = [center1_y,center1_x] + np.around((b * v)).astype(int)
                 y_nearest_pt_on_line = nearest_pt_on_line[0]
                 x_nearest_pt_on_line = nearest_pt_on_line[1]
-                distance = ((x_nearest_pt_on_line - w / 2) ** 2 + (y_nearest_pt_on_line - h / 2) ** 2) ** 0.5
-                #distance = ((center2_x - w / 2) ** 2 + (center2_y - h / 2) ** 2) ** 0.5
 
-                ### ANGLE CALCULATION
+                # ANGLE CALCULATION
                 angle = -np.angle((center2_x - center1_x) + (center2_y - center1_y) * 1j, deg=True) - 90    # angle calculated between arrow and the vertical axis (POSITIVE = arrow to the LEFT)
                 angle_perp = angle - 90
                 perp = -np.array([np.cos(angle_perp * np.pi /180), np.sin(angle_perp * np.pi /180)])
@@ -154,7 +153,7 @@ class image_converter:
                 mask_r_cropped = mask_r[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
                 mask_br_cropped = np.logical_or(mask_b_cropped,mask_r_cropped)
                 direction_mask = direction_mask[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
-                croped_frame = cv_image[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
+                #croped_frame = cv_image[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
                 croped_hsv = hsv[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
                 direction_mask = 255 * np.logical_or(direction_mask,mask_br_cropped).astype('uint8')
                 direction_mask_yx = np.argwhere(direction_mask == 255)
@@ -163,7 +162,7 @@ class image_converter:
 
                 hsv_nearest_pt_on_direction = croped_hsv[nearest_pt_on_direction[:,0], nearest_pt_on_direction[:,1],:]
                 in_range_red_1 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_1, hsv_nearest_pt_on_direction <= upper_red_1),axis = 1)
-                in_range_red_2 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_2, hsv_nearest_pt_on_direction <= upper_red_2),axis=1)
+                in_range_red_2 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_2, hsv_nearest_pt_on_direction <= upper_red_2),axis = 1)
                 num_red = np.count_nonzero(np.logical_or(in_range_red_1,in_range_red_2))
                 if num_red > 50:
                     is_red = True
@@ -171,31 +170,25 @@ class image_converter:
                     is_red = False
 
                 #TODO: add buffer
-                if not is_red: angle = angle + 180
+                if not is_red and self._orientation_forward == True and abs(abs(angle) - 90) < 10: self._orientation_forward == True
+                if is_red and self._orientation_forward == False and abs(abs(angle) - 90) < 10: self._orientation_forward == False
+
+                if self._orientation_forward == False: angle = angle + 180
                 if angle > 180: angle -= 360
 
-                res2 = cv2.bitwise_and(croped_frame, croped_frame, mask=direction_mask)
-                res2[nearest_pt_on_direction[:, 0], nearest_pt_on_direction[:, 1], :] = [255, 255, 255]
-                cv2.circle(res2, (pt_check_color[1], pt_check_color[0]), 5, (255, 255, 255), -1)
-                cv2.line(res2, (dX, dY), (pt_check_color[1], pt_check_color[0]), (255, 0, 0), 3)
+                img_calc.is_visible = True
+                img_calc.arrow_x = x_nearest_pt_on_line - w / 2
+                img_calc.arrow_y = y_nearest_pt_on_line - h / 2
+                img_calc.arrow_x_forward = center2_x - x_nearest_pt_on_line
+                img_calc.arrow_y_forward = center2_y - y_nearest_pt_on_line
+                img_calc.distance = ((x_nearest_pt_on_line - w / 2) ** 2 + (y_nearest_pt_on_line - h / 2) ** 2) ** 0.5
+                img_calc.angle = angle
 
-
-                #dH = 60
-                #CALCULATION METHOD 1
-                #x_mid_line = int(np.average(np.argwhere(direction_mask[h / 2, :] == 255)))  ## run time error when line doesn't cross the central row in the frame
-                #x_mid_line_1 = int(np.average(np.argwhere(direction_mask[h / 2 + dH / 2, :] == 255)))
-                #x_mid_line_2 = int(np.average(np.argwhere(direction_mask[h / 2 - dH / 2, :] == 255)))
-                #calculate distance & angle
-                #horiz_dist_px = w / 2 - x_mid_line  # POSITIVE distance = camera is RIGHT to target
-                #angle = np.angle(x_mid_line_2 - x_mid_line_1 + dH * 1j, deg=True) - 90  # consider red/blue orientation
-                #cv2.circle(res1, (x_mid_line, h / 2), 5, (0, 255, 0), -1)
-                #cv2.line(res1, (x_mid_line_1, h / 2 + dH / 2), (x_mid_line_2, h / 2 - dH / 2), (255, 0, 0), 3)
-
-                # CALCULATION METHOD 2
-                #x_nearest_1 = int(np.average(np.argwhere(direction_mask[y_nearest + dH / 2, :] == 255)))
-                #x_nearest_2 = int(np.average(np.argwhere(direction_mask[y_nearest - dH / 2, :] == 255)))
-                #cv2.line(res1, (x_nearest_1, y_nearest + dH / 2), (x_nearest_2, y_nearest - dH / 2), (255, 0, 255), 3)
-                #angle = np.angle(x_nearest_2 - x_nearest_1 + dH * 1j, deg=True) - 90  # consider red/blue orientation
+                # Visualization
+                #res2 = cv2.bitwise_and(croped_frame, croped_frame, mask=direction_mask)
+                #res2[nearest_pt_on_direction[:, 0], nearest_pt_on_direction[:, 1], :] = [255, 255, 255]
+                #cv2.circle(res2, (pt_check_color[1], pt_check_color[0]), 5, (255, 255, 255), -1)
+                #cv2.line(res2, (dX, dY), (pt_check_color[1], pt_check_color[0]), (255, 0, 0), 3)
 
                 cv2.circle(res1, (w / 2, h / 2), 5, (0, 0, 255), -1)
                 #cv2.circle(res1, (x_nearest, y_nearest), 5, (0, 255, 0), -1)
@@ -203,31 +196,20 @@ class image_converter:
                 #cv2.circle(res1, (center2_x, center2_y), 5, (0, 255, 0), -1)
 		
                 cv2.line(res1, (x_nearest_pt_on_line, y_nearest_pt_on_line), (w/2, h/2), (255, 0, 0), 3)
+                cv2.line(res1, (center1_x, center1_y), (center2_x, center2_y), (255, 0, 255), 3)
 
-                #cv2.putText(res1, 'shift: {}'.format(horiz_dist_px), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
-                cv2.putText(res1, 'distance: {}'.format(distance), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
-                cv2.putText(res1, 'angle: {0:.3f}'.format(angle), (w / 2, 50), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
+                cv2.putText(res1, 'distance: {}'.format(img_calc.distance), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
+                cv2.putText(res1, 'angle: {0:.3f}'.format(img_calc.angle), (w / 2, 50), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
                 #cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
-                cv2.putText(res1, '#is forward: {}'.format(is_red), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
+                cv2.putText(res1, '#is forward: {}'.format(self._orientation_forward), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
 
                 cv2.imshow('res1', res1)
-                cv2.imshow('res2',res2)
+                #cv2.imshow('res2',res2)
                 #cv2.imshow('thin',thin_line_mask)
                 #cv2.imshow('frame',cv_image)
                 cv2.waitKey(1)
-
-                img_calc.is_visible = True
-                # msg_calc.shift = horiz_dist_px
-                img_calc.distance = distance
-
-                ################################################################################
-                img_calc.arrow_x = x_nearest_pt_on_line - w / 2  # x grows from left to right
-                img_calc.arrow_y = y_nearest_pt_on_line - h / 2  # y grows from top to bottom
-                #img_calc.arrow_x = center2_x - w / 2  # x grows from left to right
-                #img_calc.arrow_y = center2_y - h / 2  # y grows from top to bottom
-                img_calc.angle = angle
 
             except:
                 img_calc.is_visible = False

@@ -2,7 +2,7 @@
   <arg name="droneip" default="192.168.1.1" />
   <node name="ardrone_driver" pkg="ardrone_autonomy" type="ardrone_driver" output="screen" args="-ip $(arg droneip)">
     <param name="navdata_demo" value="False" />
-    <param name="realtime_navdata" value="True" />
+    <param name="realtime_navdata" value="False" />
     <param name="realtime_video" value="True" />
     <param name="looprate" value="30" />
     <param name="outdoor" value="False" />
@@ -10,9 +10,10 @@
     <param name="altitude_max" value="2000" />
     <param name="altitude_min" value="50" />
     <param name="control_vz_max" value="2000" />
-    <param name="control_yaw" value="3" />
+    <param name="control_yaw" value="9" />
     <param name="indoor_control_vz_max" value="2000" />
-    <param name="indoor_control_yaw" value="3" />
+    <param name="indoor_control_yaw" value="9" />
     <param name="control_level" value="1" />
   </node>
+  <node name="drop" pkg="topic_tools" type="drop" output="screen" args="/ardrone/bottom/image_raw 1 2"></node>
 </launch>

@@ -9,8 +9,8 @@ quitChar = 'q'
 keyCommands = {
 		'i':"SET_VELOCITY 0.1 0 0 0 0 0",
 		'k':"SET_VELOCITY -0.1 0 0 0 0 0",
-		'l':"SET_VELOCITY 0 0 0 0 0 -0.3",
-		'j':"SET_VELOCITY 0 0 0 0 0 0.3",
+		'l':"SET_VELOCITY 0 0 0 0 0 -0.1",
+		'j':"SET_VELOCITY 0 0 0 0 0 0.1",
                 'h':"SET_VELOCITY 0 0 0.3 0 0 0",
                 'b':"SET_VELOCITY 0 0 -0.3 0 0 0",
                 'y':"SET_VELOCITY 0 -0.1 0 0 0 0",
@@ -47,7 +47,6 @@ class _Getch:
     
 
 if __name__ == "__main__":
-    ### change topic turtle/drone!!!
     pub = rospy.Publisher('/drone_controller/com', String, queue_size = 1)
     pubEmergency = rospy.Publisher('/ardrone/reset', Empty, queue_size = 1)
     pubLand = rospy.Publisher('/ardrone/land', Empty, queue_size = 1)
