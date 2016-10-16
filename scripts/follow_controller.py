@@ -96,7 +96,7 @@ if __name__ == "__main__":
                     #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                     controller._pubCommand.publish(command)
                     controller.sleep()
-                    if abs(controller.img_calc.angle) > 10:
+                    if abs(controller.img_calc.angle) > 5:
                         dt = 0.007 * abs(controller.img_calc.angle)
                         rospy.sleep(dt) #sleep seconds
 

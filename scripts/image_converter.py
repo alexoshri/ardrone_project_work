@@ -143,38 +143,38 @@ class image_converter:
 
                 # ANGLE CALCULATION
                 angle = -np.angle((center2_x - center1_x) + (center2_y - center1_y) * 1j, deg=True) - 90    # angle calculated between arrow and the vertical axis (POSITIVE = arrow to the LEFT)
-                angle_perp = angle - 90
-                perp = -np.array([np.cos(angle_perp * np.pi /180), np.sin(angle_perp * np.pi /180)])
-
-                dX = 50
-                dY = 50
-                pt_check_color = np.around(np.array([dY + 80 * perp[0],dX + 80 * perp[1]])).astype(int) # far away point on the right perpndicular
-                mask_b_cropped = mask_b[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
-                mask_r_cropped = mask_r[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
-                mask_br_cropped = np.logical_or(mask_b_cropped,mask_r_cropped)
-                direction_mask = direction_mask[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
-                #croped_frame = cv_image[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
-                croped_hsv = hsv[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
-                direction_mask = 255 * np.logical_or(direction_mask,mask_br_cropped).astype('uint8')
-                direction_mask_yx = np.argwhere(direction_mask == 255)
-                _, index = spatial.KDTree(direction_mask_yx).query(pt_check_color,200)
-                nearest_pt_on_direction = direction_mask_yx[index]
-
-                hsv_nearest_pt_on_direction = croped_hsv[nearest_pt_on_direction[:,0], nearest_pt_on_direction[:,1],:]
-                in_range_red_1 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_1, hsv_nearest_pt_on_direction <= upper_red_1),axis = 1)
-                in_range_red_2 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_2, hsv_nearest_pt_on_direction <= upper_red_2),axis = 1)
-                num_red = np.count_nonzero(np.logical_or(in_range_red_1,in_range_red_2))
-                if num_red > 50:
-                    is_red = True
-                else:
-                    is_red = False
-
-                #TODO: add buffer
-                if not is_red and self._orientation_forward == True and abs(abs(angle) - 90) < 10: self._orientation_forward = False
-                if is_red and self._orientation_forward == False and abs(abs(angle) - 90) < 10: self._orientation_forward = True
+                # angle_perp = angle - 90
+                # perp = -np.array([np.cos(angle_perp * np.pi /180), np.sin(angle_perp * np.pi /180)])
+                #
+                # dX = 50
+                # dY = 50
+                # pt_check_color = np.around(np.array([dY + 80 * perp[0],dX + 80 * perp[1]])).astype(int) # far away point on the right perpndicular
+                # mask_b_cropped = mask_b[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
+                # mask_r_cropped = mask_r[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
+                # mask_br_cropped = np.logical_or(mask_b_cropped,mask_r_cropped)
+                # direction_mask = direction_mask[y_nearest_pt_on_line - dY : y_nearest_pt_on_line + dY, x_nearest_pt_on_line - dX : x_nearest_pt_on_line + dX]
+                # #croped_frame = cv_image[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
+                # croped_hsv = hsv[y_nearest_pt_on_line - dY: y_nearest_pt_on_line + dY,x_nearest_pt_on_line - dX: x_nearest_pt_on_line + dX]
+                # direction_mask = 255 * np.logical_or(direction_mask,mask_br_cropped).astype('uint8')
+                # direction_mask_yx = np.argwhere(direction_mask == 255)
+                # _, index = spatial.KDTree(direction_mask_yx).query(pt_check_color,200)
+                # nearest_pt_on_direction = direction_mask_yx[index]
+                #
+                # hsv_nearest_pt_on_direction = croped_hsv[nearest_pt_on_direction[:,0], nearest_pt_on_direction[:,1],:]
+                # in_range_red_1 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_1, hsv_nearest_pt_on_direction <= upper_red_1),axis = 1)
+                # in_range_red_2 = np.all(np.logical_and(hsv_nearest_pt_on_direction >= lower_red_2, hsv_nearest_pt_on_direction <= upper_red_2),axis = 1)
+                # num_red = np.count_nonzero(np.logical_or(in_range_red_1,in_range_red_2))
+                # if num_red > 50:
+                #     is_red = True
+                # else:
+                #     is_red = False
+                #
+                # #TODO: add buffer
+                # if not is_red and self._orientation_forward == True and abs(abs(angle) - 90) < 10: self._orientation_forward = False
+                # if is_red and self._orientation_forward == False and abs(abs(angle) - 90) < 10: self._orientation_forward = True
 
                 #if self._orientation_forward == False: angle = angle + 180
-                if angle > 180: angle -= 360
+                #if angle > 180: angle -= 360
 
                 img_calc.is_visible = True
                 img_calc.arrow_x = x_nearest_pt_on_line - w / 2
@@ -202,8 +202,8 @@ class image_converter:
                 cv2.putText(res1, 'angle: {0:.3f}'.format(img_calc.angle), (w / 2, 50), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
                 #cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
-                cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
-                cv2.putText(res1, '#is forward: {}'.format(self._orientation_forward), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
+                #cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
+                #cv2.putText(res1, '#is forward: {}'.format(self._orientation_forward), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
 
                 cv2.imshow('res1', res1)
                 #cv2.imshow('res2',res2)
