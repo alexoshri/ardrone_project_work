@@ -29,7 +29,7 @@ class image_converter:
         self.image_pub = rospy.Publisher("image_converter/img", Image, queue_size=10)  # queue?
         self.image_pub_calc = rospy.Publisher("image_converter/calc", ImageCalc, queue_size=10)  # queue?
         self._is_visible = False
-        #self._orientation_forward = True#np.ones((1,10), dtype=bool) #FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
+        self._orientation_forward = True#np.ones((1,10), dtype=bool) #FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
 
     def callback(self, data):
         img_calc = ImageCalc()
@@ -170,8 +170,8 @@ class image_converter:
                     is_red = False
 
                 #TODO: add buffer
-                #if not is_red and self._orientation_forward == True and abs(abs(angle) - 90) < 10: self._orientation_forward = False
-                #if is_red and self._orientation_forward == False and abs(abs(angle) - 90) < 10: self._orientation_forward = True
+                if not is_red and self._orientation_forward == True and abs(abs(angle) - 90) < 10: self._orientation_forward = False
+                if is_red and self._orientation_forward == False and abs(abs(angle) - 90) < 10: self._orientation_forward = True
 
                 #if self._orientation_forward == False: angle = angle + 180
                 if angle > 180: angle -= 360
@@ -203,7 +203,7 @@ class image_converter:
                 #cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
-                #cv2.putText(res1, '#is forward: {}'.format(self._orientation_forward), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
+                cv2.putText(res1, '#is forward: {}'.format(self._orientation_forward), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
 
                 cv2.imshow('res1', res1)
                 #cv2.imshow('res2',res2)
