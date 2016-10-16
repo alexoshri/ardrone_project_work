@@ -179,8 +179,8 @@ class image_converter:
                 img_calc.is_visible = True
                 img_calc.arrow_x = x_nearest_pt_on_line - w / 2
                 img_calc.arrow_y = y_nearest_pt_on_line - h / 2
-                img_calc.arrow_x_forward = center2_x - x_nearest_pt_on_line
-                img_calc.arrow_y_forward = center2_y - y_nearest_pt_on_line
+                img_calc.arrow_x_forward = center2_x - center1_x
+                img_calc.arrow_y_forward = center2_y - center1_y
                 img_calc.distance = ((x_nearest_pt_on_line - w / 2) ** 2 + (y_nearest_pt_on_line - h / 2) ** 2) ** 0.5
                 img_calc.angle = angle
 

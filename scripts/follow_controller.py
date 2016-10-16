@@ -20,7 +20,7 @@ class follow_controller:
 
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
         rospy.Subscriber('follow_controller/enable_control', Bool, self.callbackEnableControl)        
-
+        self.is_visible = False
     def callbackEnableControl(self, msg):
         flag = msg.data
         print("Enable/Disable Control = {}".format(flag) + "\n")
@@ -31,11 +31,9 @@ class follow_controller:
 
         :type data: ImageCalc object
         """
-        self.img_calc = data
-        if self.enableControl == True and self.img_calc.is_visible == False: #if control enables and path is not visible
-            command = "HOVER"
-            #print("follow_cntroller: " + command + "\n")
-            #controller._pubCommand.publish(command)
+        self.is_visible = data.is_visible
+        if self.is_visible:
+            self.img_calc = data
 
     def cleanup(self):
         print("followController cleanup method")
@@ -50,7 +48,7 @@ if __name__ == "__main__":
     try:
         while not rospy.is_shutdown():
             if controller.enableControl == True:
-                if controller.img_calc.is_visible:
+                if controller.is_visible:
                     x_vel = -float(controller.img_calc.arrow_x)*0.02
                     y_vel = -float(controller.img_calc.arrow_y)*0.02
                     if abs(x_vel)>1 or abs(y_vel)>1:
@@ -61,7 +59,7 @@ if __name__ == "__main__":
                     #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                     controller._pubCommand.publish(command)
                     controller._rateHoriz.sleep()
-                    if controller.img_calc.distance > 50:
+                    if controller.img_calc.distance > 30:
                         dt = 0.0015 * controller.img_calc.distance
                         rospy.sleep(dt) # sleep seconds
 
@@ -71,16 +69,13 @@ if __name__ == "__main__":
                     controller._rateHover.sleep()
 
                     #####
-                    #x_vel = -float(controller.img_calc.arrow_x_forward)*0.005
-                    #y_vel = -float(controller.img_calc.arrow_y_forward)*0.005
-                    #if abs(x_vel)>1 or abs(y_vel)>1:
-                    #    norm = (x_vel**2 + y_vel**2)**0.5
-                    #    x_vel = x_vel/norm
-                    #    y_vel = y_vel/norm
-                    #command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel + Bias, x_vel)
+                    norm = (controller.img_calc.arrow_x_forward**2 + controller.img_calc.arrow_y_forward**2)**0.5
+                    x_vel = -float(controller.img_calc.arrow_x_forward)/float(norm) * 0.2
+                    y_vel = -float(controller.img_calc.arrow_y_forward)/float(norm) * 0.2
+                    command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel + Bias, x_vel)
                     #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
-                    #controller._pubCommand.publish(command)
-                    #rospy.sleep(0.1)
+                    controller._pubCommand.publish(command)
+                    rospy.sleep(0.4)
 
 
                     command = "HOVER"
@@ -93,7 +88,7 @@ if __name__ == "__main__":
                     if angular_vel > 1: angular_vel = 1.0
                     if angular_vel < -1: angular_vel = -1.0
                     command = "SET_VELOCITY {} 0 0 0 0 {}".format(Bias,angular_vel)
-                    #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
+                    #print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.ximg_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                     controller._pubCommand.publish(command)
                     controller.sleep()
                     if abs(controller.img_calc.angle) > 5:
