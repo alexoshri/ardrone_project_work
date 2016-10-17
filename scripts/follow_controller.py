@@ -14,15 +14,15 @@ class follow_controller:
         self.enableControl = False
 
         rospy.init_node('follow_controller', anonymous=False)
-        self._pubCommand = rospy.Publisher('drone_controller/com', String, queue_size=20)
+        self._pubCommand = rospy.Publisher('drone_controller/com', String, queue_size=10)
         self._rateCommand = rospy.Rate(1.5)
         self._rateHoriz = rospy.Rate(1.8)
-        self._rateHover = rospy.Rate(1.5)  # 5Hz
+        self._rateHover = rospy.Rate(1.1)  # 5Hz
 
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
         rospy.Subscriber('follow_controller/enable_control', Bool, self.callbackEnableControl)
         self.is_visible = False
-        self.FORWARD_RATIO
+        self.FORWARD_RATIO = 4
 
     def callbackEnableControl(self, msg):
         flag = msg.data
@@ -47,14 +47,14 @@ class follow_controller:
 
 if __name__ == "__main__":
     controller = follow_controller()
-    Bias = 0
+    Bias = 0.0
     forward_conter = 1
     try:
         while not rospy.is_shutdown():
             if controller.enableControl == True:
                 if controller.is_visible:
-                    x_vel = -float(controller.img_calc.arrow_x) * 0.02
-                    y_vel = -float(controller.img_calc.arrow_y) * 0.02
+                    x_vel = -float(controller.img_calc.arrow_x) * 0.005
+                    y_vel = -float(controller.img_calc.arrow_y) * 0.005
                     if abs(x_vel) > 1 or abs(y_vel) > 1:
                         norm = (x_vel ** 2 + y_vel ** 2) ** 0.5
                         x_vel = x_vel / norm
@@ -73,11 +73,13 @@ if __name__ == "__main__":
                     ### FLIGHT FORWARD executed once in controller.FORWARD_RATIO iterations
                     if forward_conter == 0:
                         norm = (controller.img_calc.arrow_x_forward ** 2 + controller.img_calc.arrow_y_forward ** 2) ** 0.5
-                        x_vel = -float(controller.img_calc.arrow_x_forward) / float(norm) * 0.2
-                        y_vel = -float(controller.img_calc.arrow_y_forward) / float(norm) * 0.2
-                        command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel + Bias, x_vel)
+                        if controller.img_calc.turn_indicator_distance > 10: vel = 0.1
+                        else: vel = 0.18
+                        x_vel = float(controller.img_calc.arrow_x_forward) / float(norm) * vel
+                        y_vel = float(controller.img_calc.arrow_y_forward) / float(norm) * vel
+                        command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel)
                         controller._pubCommand.publish(command)
-                        rospy.sleep(0.7)
+                        rospy.sleep(0.6)
 
                         command = "HOVER"
                         controller._pubCommand.publish(command)
@@ -100,6 +102,8 @@ if __name__ == "__main__":
                     command = "HOVER"
                     controller._pubCommand.publish(command)
                     controller._rateHover.sleep()
+                else:
+                    rospy.sleep(0.2)
             else:
                 rospy.sleep(0.2)
 

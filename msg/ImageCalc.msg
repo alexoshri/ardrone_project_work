@@ -3,6 +3,7 @@ bool is_visible
 float32 shift
 float32 angle
 float32 distance
+float32 turn_indicator_distance
 int32 arrow_x
 int32 arrow_y
 int32 arrow_x_forward

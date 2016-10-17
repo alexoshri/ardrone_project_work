@@ -18,7 +18,8 @@ keyCommands = {
                 'z':"TAKEOFF",
                 'x':"LAND",
                 'c':"HOVER",
-                'v':"RESET"
+                'v':"RESET",
+        '2':"SET_VELOCITY 0 0 0 0.1 0.1 0"
 	       }
 followControllerCommands = {
                 '1':"Enable/Disable Control"

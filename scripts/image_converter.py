@@ -26,7 +26,7 @@ class image_converter:
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/ardrone/bottom/image_raw_drop", Image, self.callback)  # subscribe to drop topic
 
-        self.image_pub = rospy.Publisher("image_converter/img", Image, queue_size=10)  # queue?
+        self.image_pub = rospy.Publisher("image_converter/img", Image, queue_size=1)  # queue?
         self.image_pub_calc = rospy.Publisher("image_converter/calc", ImageCalc, queue_size=10)  # queue?
         self._is_visible = False
         self._orientation_forward = True#np.ones((1,10), dtype=bool) #FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
@@ -183,6 +183,7 @@ class image_converter:
                 img_calc.arrow_y_forward = center2_y - center1_y
                 img_calc.distance = ((x_nearest_pt_on_line - w / 2) ** 2 + (y_nearest_pt_on_line - h / 2) ** 2) ** 0.5
                 img_calc.angle = angle
+                img_calc.turn_indicator_distance = ((x_nearest_pt_on_line - nearest_pt[1]) ** 2 + (y_nearest_pt_on_line - nearest_pt[0]) ** 2) ** 0.5
 
                 # Visualization
                 #res2 = cv2.bitwise_and(croped_frame, croped_frame, mask=direction_mask)
@@ -193,6 +194,7 @@ class image_converter:
                 cv2.circle(res1, (w / 2, h / 2), 5, (0, 0, 255), -1)
                 #cv2.circle(res1, (x_nearest, y_nearest), 5, (0, 255, 0), -1)
                 cv2.circle(res1, (x_nearest_pt_on_line, y_nearest_pt_on_line), 5, (0, 255, 255), -1)
+                cv2.circle(res1, (nearest_pt[1], nearest_pt[0]), 5, (255, 255, 255), -1)
                 #cv2.circle(res1, (center2_x, center2_y), 5, (0, 255, 0), -1)
 		
                 cv2.line(res1, (x_nearest_pt_on_line, y_nearest_pt_on_line), (w/2, h/2), (255, 0, 0), 3)
@@ -200,6 +202,7 @@ class image_converter:
 
                 cv2.putText(res1, 'distance: {}'.format(img_calc.distance), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
                 cv2.putText(res1, 'angle: {0:.3f}'.format(img_calc.angle), (w / 2, 50), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
+                cv2.putText(res1, 'turn distance: {}'.format(img_calc.turn_indicator_distance), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
                 #cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
