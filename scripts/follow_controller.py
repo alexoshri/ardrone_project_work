@@ -22,6 +22,7 @@ class follow_controller:
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
         rospy.Subscriber('follow_controller/enable_control', Bool, self.callbackEnableControl)
         self.is_visible = False
+        self.FORWARD_RATIO
 
     def callbackEnableControl(self, msg):
         flag = msg.data
@@ -59,7 +60,6 @@ if __name__ == "__main__":
                         x_vel = x_vel / norm
                         y_vel = y_vel / norm
                     command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel + Bias, x_vel)
-                    # print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                     controller._pubCommand.publish(command)
                     controller._rateHoriz.sleep()
                     if controller.img_calc.distance > 30:
@@ -67,32 +67,30 @@ if __name__ == "__main__":
                         rospy.sleep(dt)  # sleep seconds
 
                     command = "HOVER"
-                    # print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                     controller._pubCommand.publish(command)
                     controller._rateHover.sleep()
 
-                    #####
+                    ### FLIGHT FORWARD executed once in controller.FORWARD_RATIO iterations
                     if forward_conter == 0:
-                        norm = (
-                               controller.img_calc.arrow_x_forward ** 2 + controller.img_calc.arrow_y_forward ** 2) ** 0.5
+                        norm = (controller.img_calc.arrow_x_forward ** 2 + controller.img_calc.arrow_y_forward ** 2) ** 0.5
                         x_vel = -float(controller.img_calc.arrow_x_forward) / float(norm) * 0.2
                         y_vel = -float(controller.img_calc.arrow_y_forward) / float(norm) * 0.2
                         command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel + Bias, x_vel)
-                        # print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                         controller._pubCommand.publish(command)
                         rospy.sleep(0.7)
 
                         command = "HOVER"
-                        # print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                         controller._pubCommand.publish(command)
                         controller._rateHover.sleep()
+                    ### END OF FLIGHT FORWARD BLOCK
 
-                    #####
+                    forward_conter += 1
+                    forward_conter = forward_conter % controller.FORWARD_RATIO
+
                     angular_vel = 0.07 * controller.img_calc.angle
                     if angular_vel > 1: angular_vel = 1.0
                     if angular_vel < -1: angular_vel = -1.0
                     command = "SET_VELOCITY {} 0 0 0 0 {}".format(Bias, angular_vel)
-                    # print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.ximg_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                     controller._pubCommand.publish(command)
                     controller.sleep()
                     if abs(controller.img_calc.angle) > 5:
@@ -100,12 +98,8 @@ if __name__ == "__main__":
                         rospy.sleep(dt)  # sleep seconds
 
                     command = "HOVER"
-                    # print("follow_cntroller: " + command + " frame_time_stamp: {} {}".format(controller.img_calc.time_stamp.secs, controller.img_calc.time_stamp.nsecs) + "\n")
                     controller._pubCommand.publish(command)
                     controller._rateHover.sleep()
-
-                    forward_conter += 1
-                    forward_conter = forward_conter % 7
             else:
                 rospy.sleep(0.2)
 
