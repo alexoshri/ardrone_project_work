@@ -81,7 +81,7 @@ class image_converter:
         chosen_cnt = None
         for h, cnt in enumerate(contours):
             (x, y), radius = cv2.minEnclosingCircle(cnt)
-            minRad = height/10
+            minRad = height/15
             if radius >= minRad:
                 chosen_cnt = cnt
 
@@ -113,8 +113,8 @@ class image_converter:
                 nearest_pt, _ = kmeans(nearest_pt, 1)
                 nearest_pt = nearest_pt[0]
 
-                NN_indices_out = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 100)
-                NN_indices_in = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 80)
+                NN_indices_out = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 140)
+                NN_indices_in = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 120)
                 NN_extreme_indices = list(set(NN_indices_out) - set(NN_indices_in))
                 intersection_pixels = line_yx[NN_extreme_indices]
                 centroids, _ = kmeans(intersection_pixels, 2)

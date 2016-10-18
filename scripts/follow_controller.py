@@ -53,10 +53,10 @@ if __name__ == "__main__":
         while not rospy.is_shutdown():
             if controller.enableControl == True:
                 if controller.is_visible:
-                    if controller.img_calc.turn_indicator_distance < 100:
+                    if True:#controller.img_calc.turn_indicator_distance < 100:
                         ### PLANAR CONTROL BLOCK
-                        x_vel = -float(controller.img_calc.arrow_x) * 0.007
-                        y_vel = -float(controller.img_calc.arrow_y) * 0.007
+                        x_vel = -float(controller.img_calc.arrow_x) * 0.01
+                        y_vel = -float(controller.img_calc.arrow_y) * 0.01
                         if abs(x_vel) > 1 or abs(y_vel) > 1:
                             norm = (x_vel ** 2 + y_vel ** 2) ** 0.5
                             x_vel = x_vel / norm
@@ -64,7 +64,7 @@ if __name__ == "__main__":
                         command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel + Bias, x_vel)
                         controller._pubCommand.publish(command)
                         controller._rateHoriz.sleep()
-                        if controller.img_calc.distance > 30:
+                        if controller.img_calc.distance > 80:
                             command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel) #publish same command withous bias
                             controller._pubCommand.publish(command)
                             dt = 0.0015 * controller.img_calc.distance
@@ -78,8 +78,8 @@ if __name__ == "__main__":
                     ### FLIGHT FORWARD executed once in controller.FORWARD_RATIO iterations
                     if forward_conter == 0:
                         norm = (controller.img_calc.arrow_x_forward ** 2 + controller.img_calc.arrow_y_forward ** 2) ** 0.5
-                        if controller.img_calc.turn_indicator_distance > 5: vel = 0.1
-                        else: vel = 0.18
+                        if controller.img_calc.turn_indicator_distance > 5: vel = 0.09
+                        else: vel = 0.15
                         x_vel = -float(controller.img_calc.arrow_x_forward) / float(norm) * vel
                         y_vel = -float(controller.img_calc.arrow_y_forward) / float(norm) * vel
                         command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel)
@@ -100,7 +100,9 @@ if __name__ == "__main__":
                     command = "SET_VELOCITY {} 0 0 0 0 {}".format(Bias, angular_vel)
                     controller._pubCommand.publish(command)
                     controller.sleep()
-                    if abs(controller.img_calc.angle) > 5:
+                    if abs(controller.img_calc.angle) > 20:
+			command = "SET_VELOCITY {} 0 0 0 0 {}".format(0, angular_vel) #publish same command withous bias
+                    	controller._pubCommand.publish(command)
                         dt = 0.007 * abs(controller.img_calc.angle)
                         rospy.sleep(dt)  # sleep seconds
 
