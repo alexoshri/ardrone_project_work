@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="33f7b378-6453-4bfa-a15d-801eaa19714d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/launch/ardrone_project.launch" afterPath="$PROJECT_DIR$/launch/ardrone_project.launch" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/follow_controller.py" afterPath="$PROJECT_DIR$/scripts/follow_controller.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/image_converter.py" afterPath="$PROJECT_DIR$/scripts/image_converter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/keyboard_controller.py" afterPath="$PROJECT_DIR$/scripts/keyboard_controller.py" />
     </list>
     <ignored path="ardrone_project_work.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,8 +25,8 @@
       <file leaf-file-name="follow_controller.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/follow_controller.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="780">
-              <caret line="98" column="34" selection-start-line="98" selection-start-column="34" selection-end-line="98" selection-end-column="34" />
+            <state relative-caret-position="315">
+              <caret line="28" column="64" selection-start-line="28" selection-start-column="64" selection-end-line="28" selection-end-column="64" />
               <folding />
             </state>
           </provider>
@@ -576,8 +572,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/follow_controller.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="780">
-          <caret line="98" column="34" selection-start-line="98" selection-start-column="34" selection-end-line="98" selection-end-column="34" />
+        <state relative-caret-position="315">
+          <caret line="28" column="64" selection-start-line="28" selection-start-column="64" selection-end-line="28" selection-end-column="64" />
           <folding />
         </state>
       </provider>
