@@ -47,7 +47,7 @@ class follow_controller:
 
 if __name__ == "__main__":
     controller = follow_controller()
-    Bias = 0.0
+    Bias = 0.1
     forward_conter = 1
     try:
         while not rospy.is_shutdown():
@@ -65,6 +65,8 @@ if __name__ == "__main__":
                         controller._pubCommand.publish(command)
                         controller._rateHoriz.sleep()
                         if controller.img_calc.distance > 30:
+                            command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel) #publish same command withous bias
+                            controller._pubCommand.publish(command)
                             dt = 0.0015 * controller.img_calc.distance
                             rospy.sleep(dt)  # sleep seconds
 
