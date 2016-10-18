@@ -81,7 +81,7 @@ class image_converter:
         chosen_cnt = None
         for h, cnt in enumerate(contours):
             (x, y), radius = cv2.minEnclosingCircle(cnt)
-            minRad = height/20
+            minRad = height/15
             if radius >= minRad:
                 chosen_cnt = cnt
 

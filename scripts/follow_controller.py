@@ -55,8 +55,8 @@ if __name__ == "__main__":
                 if controller.is_visible:
                     if True:#controller.img_calc.turn_indicator_distance < 100:
                         ### PLANAR CONTROL BLOCK
-                        x_vel = -float(controller.img_calc.arrow_x) * 0.01
-                        y_vel = -float(controller.img_calc.arrow_y) * 0.01
+                        x_vel = -float(controller.img_calc.arrow_x) * 0.015
+                        y_vel = -float(controller.img_calc.arrow_y) * 0.015
                         if abs(x_vel) > 1 or abs(y_vel) > 1:
                             norm = (x_vel ** 2 + y_vel ** 2) ** 0.5
                             x_vel = x_vel / norm
