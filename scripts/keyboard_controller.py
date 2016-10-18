@@ -48,11 +48,11 @@ class _Getch:
     
 
 if __name__ == "__main__":
-    pub = rospy.Publisher('/drone_controller/com', String, queue_size = 1)
-    pubEmergency = rospy.Publisher('/ardrone/reset', Empty, queue_size = 1)
-    pubLand = rospy.Publisher('/ardrone/land', Empty, queue_size = 1)
-    pubTakeoff = rospy.Publisher('/ardrone/takeoff', Empty, queue_size = 1)
-    pubEnableControl = rospy.Publisher('follow_controller/enable_control', Bool, queue_size = 1)
+    pub = rospy.Publisher('/drone_controller/com', String, queue_size = 3)
+    pubEmergency = rospy.Publisher('/ardrone/reset', Empty, queue_size = 3)
+    pubLand = rospy.Publisher('/ardrone/land', Empty, queue_size = 3)
+    pubTakeoff = rospy.Publisher('/ardrone/takeoff', Empty, queue_size = 3)
+    pubEnableControl = rospy.Publisher('follow_controller/enable_control', Bool, queue_size = 3)
     enableControlFlag = True
 
     rospy.init_node('keyboard_controller')

@@ -172,9 +172,9 @@ class image_converter:
                 # #TODO: add buffer
                 # if not is_red and self._orientation_forward == True and abs(abs(angle) - 90) < 10: self._orientation_forward = False
                 # if is_red and self._orientation_forward == False and abs(abs(angle) - 90) < 10: self._orientation_forward = True
-
-                #if self._orientation_forward == False: angle = angle + 180
-                #if angle > 180: angle -= 360
+                #
+                # if self._orientation_forward == False: angle = angle + 180
+                # if angle > 180: angle -= 360
 
                 img_calc.is_visible = True
                 img_calc.arrow_x = x_nearest_pt_on_line - w / 2
@@ -206,7 +206,7 @@ class image_converter:
                 #cv2.putText(res1, 'secs: {}'.format(time_stamp.secs), (w / 2, 150), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, 'nsecs: {}'.format(time_stamp.nsecs), (w / 2, 180), cv2.FONT_ITALIC, 0.5, (255, 255, 255), 1)
                 #cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
-                #cv2.putText(res1, '#is forward: {}'.format(self._orientation_forward), (w / 2, 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
+                #cv2.putText(res1, '#is forward: {}'.format(self._orientation_forward), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
 
                 cv2.imshow('res1', res1)
                 #cv2.imshow('res2',res2)

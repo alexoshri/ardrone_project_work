@@ -17,7 +17,7 @@ class follow_controller:
         self._pubCommand = rospy.Publisher('drone_controller/com', String, queue_size=10)
         self._rateCommand = rospy.Rate(1.5)
         self._rateHoriz = rospy.Rate(1.8)
-        self._rateHover = rospy.Rate(1.1)  # 5Hz
+        self._rateHover = rospy.Rate(1.5)  # 5Hz
 
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
         rospy.Subscriber('follow_controller/enable_control', Bool, self.callbackEnableControl)
@@ -73,10 +73,10 @@ if __name__ == "__main__":
                     ### FLIGHT FORWARD executed once in controller.FORWARD_RATIO iterations
                     if forward_conter == 0:
                         norm = (controller.img_calc.arrow_x_forward ** 2 + controller.img_calc.arrow_y_forward ** 2) ** 0.5
-                        if controller.img_calc.turn_indicator_distance > 10: vel = 0.1
+                        if controller.img_calc.turn_indicator_distance > 5: vel = 0.08
                         else: vel = 0.18
-                        x_vel = float(controller.img_calc.arrow_x_forward) / float(norm) * vel
-                        y_vel = float(controller.img_calc.arrow_y_forward) / float(norm) * vel
+                        x_vel = -float(controller.img_calc.arrow_x_forward) / float(norm) * vel
+                        y_vel = -float(controller.img_calc.arrow_y_forward) / float(norm) * vel
                         command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel)
                         controller._pubCommand.publish(command)
                         rospy.sleep(0.6)
@@ -96,7 +96,7 @@ if __name__ == "__main__":
                     controller._pubCommand.publish(command)
                     controller.sleep()
                     if abs(controller.img_calc.angle) > 5:
-                        dt = 0.007 * abs(controller.img_calc.angle)
+                        dt = 0.006 * abs(controller.img_calc.angle)
                         rospy.sleep(dt)  # sleep seconds
 
                     command = "HOVER"
