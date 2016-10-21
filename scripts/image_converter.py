@@ -23,6 +23,7 @@ import numpy as np
 
 class image_converter:
     def __init__(self):
+        rospy.init_node('image_converter', anonymous=True)
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/ardrone/bottom/image_raw_drop", Image, self.callback)  # subscribe to drop topic
 
@@ -221,20 +222,21 @@ class image_converter:
             print("image_converter: Visibile = {}".format(img_calc.is_visible)) #print only when visibility changes
         self._is_visible = img_calc.is_visible
 
-        try:
-            self.image_pub_calc.publish(img_calc)
-            #self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
-        except: # message can arrive before node was initialized
-            pass
+        #try:
+        self.image_pub_calc.publish(img_calc)
+        #self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+        #except: # message can arrive before node was initialized
+            #pass
 
 
 def main(args):
     ic = image_converter()
-    rospy.init_node('image_converter', anonymous=True)
     try:
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
+    except rospy.ROSInterruptException:
+        print("take_off_unit: ROSInterruptException")
     finally:
         cv2.destroyAllWindows()
 

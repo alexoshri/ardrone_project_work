@@ -19,10 +19,10 @@ keyCommands = {
                 'x':"LAND",
                 'c':"HOVER",
                 'v':"RESET",
-        '2':"SET_VELOCITY 0 0 0 0.1 0.1 0"
 	       }
-followControllerCommands = {
-                '1':"Enable/Disable Control"
+ToggleCommands = {
+                '1':"Enable/Disable Follow Controller",
+                '2':"Enable/Disable TakeOffUnit"
                 }
 
 directCommands = {
@@ -53,7 +53,9 @@ if __name__ == "__main__":
     pubLand = rospy.Publisher('/ardrone/land', Empty, queue_size = 3)
     pubTakeoff = rospy.Publisher('/ardrone/takeoff', Empty, queue_size = 3)
     pubEnableControl = rospy.Publisher('follow_controller/enable_control', Bool, queue_size = 3)
+    pubEnableTakeOff = rospy.Publisher('take_off_unit/enable_control', Bool, queue_size=3)
     enableControlFlag = True
+    enableTakeOff = True
 
     rospy.init_node('keyboard_controller')
     getch = _Getch()
@@ -62,10 +64,9 @@ if __name__ == "__main__":
         key = getch()
         if key in keyCommands:
                 command = keyCommands[key]
-                
                 print("received command from keyboard:" + "key: {0}, command: {1}".format(key,command) + "\n")
+                pub.publish(command)
 
-		pub.publish(command)
         elif key in directCommands:
             if directCommands[key] == "DIRECT_EMERGENCY":
                 print("received command from keyboard: DIRECT_EMERGENCY \n")
@@ -76,11 +77,15 @@ if __name__ == "__main__":
             elif directCommands[key] == "DIRECT_TAKEOFF":
                 print("received command from keyboard: DIRECT_TAKEOFF \n")
                 pubTakeoff.publish(Empty())
-	elif key in followControllerCommands:
-	    if followControllerCommands[key] == "Enable/Disable Control":
-		print("received command from keyboard: Enable/Disable Control = {}".format(enableControlFlag) + "\n")
-		pubEnableControl.publish(enableControlFlag)
-		enableControlFlag = not enableControlFlag
+        elif key in ToggleCommands:
+            if ToggleCommands[key] == "Enable/Disable Follow Controller":
+                print("received command from keyboard: Enable/Disable Follow Controller = {}".format(enableControlFlag) + "\n")
+                pubEnableControl.publish(enableControlFlag)
+                enableControlFlag = not enableControlFlag
+            if ToggleCommands[key] == "Enable/Disable TakeOffUnit":
+                print("received command from keyboard: Enable/Disable Take Off Unit = {}".format(enableTakeOff) + "\n")
+                pubEnableTakeOff.publish(enableTakeOff)
+                enableTakeOff = not enableTakeOff
 		
         elif key == quitChar:
                 break
