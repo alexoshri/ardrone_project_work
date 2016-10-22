@@ -5,7 +5,6 @@ roslib.load_manifest('ardrone_project')
 import sys
 import rospy
 import cv2
-import numpy as np
 from std_msgs.msg import String, Bool
 from ardrone_project.msg import ImageCalc
 from sensor_msgs.msg import Image
