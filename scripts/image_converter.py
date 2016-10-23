@@ -5,20 +5,19 @@ roslib.load_manifest('ardrone_project')
 import sys
 import rospy
 import cv2
-from std_msgs.msg import String, Bool
 from ardrone_project.msg import ImageCalc
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from scipy import spatial
-from scipy.ndimage.interpolation import shift
-from scipy.cluster.vq import vq, kmeans, whiten
+from scipy.cluster.vq import kmeans
 import numpy as np
 
 
 # ASSUMES BOTTOM CAMERA IS TOGGLED!
+# camera channel is 1
+
 # ASSUMES RED ON RIGHT WHEN STARTED
 # TODO: write initialization process to determine initial orientation
-# camera channel is 1
 
 class image_converter:
     def __init__(self):
@@ -26,7 +25,6 @@ class image_converter:
         self.bridge = CvBridge()
         self.image_sub = rospy.Subscriber("/ardrone/bottom/image_raw_drop", Image, self.callback)  # subscribe to drop topic
 
-        self.image_pub = rospy.Publisher("image_converter/img", Image, queue_size=1)  # queue?
         self.image_pub_calc = rospy.Publisher("image_converter/calc", ImageCalc, queue_size=10)  # queue?
         self._is_visible = False
         self._orientation_forward = True#np.ones((1,10), dtype=bool) #FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
@@ -36,13 +34,10 @@ class image_converter:
         time_stamp = data.header.stamp
         img_calc.time_stamp = time_stamp
 
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-            #self.image_pub.publish(data)
-        except CvBridgeError as e:
-            print(e)
-        except:
-            pass
+        #try:
+        cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+        #except CvBridgeError as e:
+        #    print(e)
 
         # filtering noise
         kernel = np.ones((5, 5), np.float32) / 25
@@ -221,11 +216,7 @@ class image_converter:
             print("image_converter: Visibile = {}".format(img_calc.is_visible)) #print only when visibility changes
         self._is_visible = img_calc.is_visible
 
-        #try:
         self.image_pub_calc.publish(img_calc)
-        #self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
-        #except: # message can arrive before node was initialized
-            #pass
 
 
 def main(args):
