@@ -10,7 +10,7 @@ from ardrone_project.msg import ImageCalc
 
 class follow_controller:
     def __init__(self):
-        self.img_calc = ImageCalc()
+        self.img_calc = ImageCalc() #elements in msg definition are assigned zero values by the default constructor.
         self.enableControl = False
 
         rospy.init_node('follow_controller', anonymous=False)
@@ -23,10 +23,12 @@ class follow_controller:
         rospy.Subscriber('follow_controller/enable_control', Bool, self.callbackEnableControl)
         self.is_visible = False
         self.FORWARD_RATIO = 3
+        self.forward_counter = 1
 
     def callbackEnableControl(self, msg):
         flag = msg.data
-        print("Enable/Disable Control = {}".format(flag) + "\n")
+        if self.enableControl is not flag:
+            print("followController: Enable/Disable Control = {}".format(flag) + "\n")
         self.enableControl = flag
 
     def callbackCalc(self, data):
@@ -38,7 +40,7 @@ class follow_controller:
         if self.is_visible:
             self.img_calc = data
         else:
-            forward_conter = 1 # count reset
+            self.forward_counter = 1 # count reset
 
     def cleanup(self):
         print("followController cleanup method")
@@ -50,7 +52,6 @@ class follow_controller:
 if __name__ == "__main__":
     controller = follow_controller()
     Bias = 0.0
-    forward_conter = 1
     try:
         while not rospy.is_shutdown():
             if controller.enableControl == True:
@@ -81,7 +82,7 @@ if __name__ == "__main__":
                 ### END OF PLANAR CONTROL BLOCK
 
                 ### FLIGHT FORWARD executed once in controller.FORWARD_RATIO iterations
-                if forward_conter == 0 and controller.is_visible:
+                if controller.forward_counter == 0 and controller.is_visible:
                     norm = (controller.img_calc.arrow_x_forward ** 2 + controller.img_calc.arrow_y_forward ** 2) ** 0.5
                     if controller.img_calc.turn_indicator_distance > 5: vel = 0.1
                     else: vel = 0.15
@@ -96,8 +97,8 @@ if __name__ == "__main__":
                     controller._rateHover.sleep()
                 ### END OF FLIGHT FORWARD BLOCK
 
-                forward_conter += 1
-                forward_conter = forward_conter % controller.FORWARD_RATIO
+                controller.forward_counter += 1
+                controller.forward_counter = controller.forward_counter % controller.FORWARD_RATIO
 
                 ### ANGULAR CONTROL BLOCK
                 if controller.is_visible:

@@ -12,19 +12,20 @@ class takeOffUnit:
         self.pubCommand = rospy.Publisher('drone_controller/com', String, queue_size=10)
         rospy.Subscriber('take_off_unit/enable_control', Bool, self.callbackEnableControl)
         rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
-        self.enable = False
+        self.enableControl = False
         self._droneStatus = "Unknown"
 
     def callbackEnableControl(self,msg):
         enable_flag = msg.data
-        if not self.enable and enable_flag:
+        if not self.enableControl and enable_flag:
             self.pubCommand.publish("TAKEOFF")
             while self._droneStatus is not "Hovering":
                 rospy.sleep(0.2)
 
-            # set altitude max to a value greater than desired height
+            # takeoff complete - drone entered hovering state
+            # TODO: set altitude max to a value greater than desired height (using rosparam)
 
-        self.enable = enable_flag
+        self.enableControl = enable_flag
 
     def callbackNavdata(self,navdata):
         self._droneStatus = droneStatus[navdata.state]
@@ -36,8 +37,9 @@ if __name__ == "__main__":
     tou = takeOffUnit()
     try:
         while not rospy.is_shutdown():
-            if tou.enable:
+            if tou.enableControl:
                 # elevate drone to desired height without loosing visibility
+                # use stabilization controller
                 pass
             else:
                 rospy.sleep(0.5)
