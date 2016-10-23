@@ -22,7 +22,8 @@ keyCommands = {
 	       }
 ToggleCommands = {
                 '1':"Enable/Disable Follow Controller",
-                '2':"Enable/Disable TakeOffUnit"
+                '2':"Enable/Disable TakeOffUnit",
+                '3':"Enable/Disable LandUnit"
                 }
 
 directCommands = {
@@ -52,10 +53,14 @@ if __name__ == "__main__":
     pubEmergency = rospy.Publisher('/ardrone/reset', Empty, queue_size = 3)
     pubLand = rospy.Publisher('/ardrone/land', Empty, queue_size = 3)
     pubTakeoff = rospy.Publisher('/ardrone/takeoff', Empty, queue_size = 3)
+
     pubEnableControl = rospy.Publisher('follow_controller/enable_control', Bool, queue_size = 3)
     pubEnableTakeOff = rospy.Publisher('take_off_unit/enable_control', Bool, queue_size=3)
+    pubEnableLand = rospy.Publisher('land_unit/enable_control', Bool, queue_size=3)
+
     enableControlFlag = True
     enableTakeOff = True
+    enableLand = True
 
     rospy.init_node('keyboard_controller')
     getch = _Getch()
@@ -86,6 +91,10 @@ if __name__ == "__main__":
                 print("received command from keyboard: Enable/Disable Take Off Unit = {}".format(enableTakeOff) + "\n")
                 pubEnableTakeOff.publish(enableTakeOff)
                 enableTakeOff = not enableTakeOff
+            if ToggleCommands[key] == "Enable/Disable LandUnit":
+                print("received command from keyboard: Enable/Disable Land Unit = {}".format(enableLand) + "\n")
+                pubEnableLand.publish(enableLand)
+                enableLand = not enableLand
 		
         elif key == quitChar:
                 break
