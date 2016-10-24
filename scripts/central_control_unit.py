@@ -71,10 +71,6 @@ if __name__ == "__main__":
                     ccu.pubEnableLand.publish(False)
                     ccu.pubEnableTakeOff(False)
                     print("Central Unit: I gave control to Follow Controller!")
-                else:
-                    ccu.pubEnableControl.publish(False)
-                    ccu.pubEnableLand.publish(False)
-                    ccu.pubEnableTakeOff.publish(True)
                 # end of toggle control block
             else:
                 rospy.sleep(0.1)
