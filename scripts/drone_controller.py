@@ -72,7 +72,7 @@ class droneController:
     def callbackCommand(self,data):
         msg = data.data
         now = rospy.get_rostime()
-        print("drone_controller: I heard " + msg + "\n") #" Time: {} {}".format(now.secs, now.nsecs)+ "\n")
+        #print("drone_controller: I heard " + msg + "\n") #" Time: {} {}".format(now.secs, now.nsecs)+ "\n")
         tokenList = msg.split(' ')
 
         if tokenList[0] == "SET_VELOCITY":

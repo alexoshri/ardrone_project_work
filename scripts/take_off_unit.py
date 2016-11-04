@@ -5,6 +5,7 @@ import rospy, roslib
 from std_msgs.msg import String, Bool, Empty
 from ardrone_autonomy.msg import Navdata
 from drone_controller import droneStatus
+from ardrone_project.msg import ImageCalc
 
 class takeOffUnit:
     def __init__(self):
@@ -12,8 +13,31 @@ class takeOffUnit:
         self.pubCommand = rospy.Publisher('drone_controller/com', String, queue_size=10)
         rospy.Subscriber('take_off_unit/enable_control', Bool, self.callbackEnableControl)
         rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
+        rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
+
+        self.img_calc = ImageCalc() #elements in msg definition are assigned zero values by the default constructor.
+        self._rateCommand = rospy.Rate(1.5)
+        self._rateHoriz = rospy.Rate(1.8)
+        self._rateHover = rospy.Rate(1.5)  # 5Hz
+
+
+        self.is_visible = False
         self.enableControl = False
         self._droneStatus = "Unknown"
+        self.UPWARD_RATIO = 3
+        self.upward_counter = 1
+
+    def callbackCalc(self, data):
+        """
+
+        :type data: ImageCalc object
+        """
+        self.is_visible = data.is_visible
+        if self.is_visible:
+            self.img_calc = data
+        else:
+            self.upward_counter = 1 # count reset
+
 
     def callbackEnableControl(self,msg):
         enable_flag = msg.data
@@ -40,7 +64,54 @@ if __name__ == "__main__":
             if tou.enableControl:
                 # elevate drone to desired height without loosing visibility
                 # use stabilization controller
-                pass
+                ### PLANAR CONTROL BLOCK
+                if tou.is_visible:
+                    if tou.img_calc.distance <= 100:
+                        x_vel = -float(tou.img_calc.arrow_x) * 0.01
+                        y_vel = -float(tou.img_calc.arrow_y) * 0.01
+                    else:
+                        x_vel = -float(tou.img_calc.arrow_x) * 0.005
+                        y_vel = -float(tou.img_calc.arrow_y) * 0.005
+
+                    if abs(x_vel) > 1 or abs(y_vel) > 1:
+                        norm = (x_vel ** 2 + y_vel ** 2) ** 0.5
+                        x_vel = x_vel / norm
+                        y_vel = y_vel / norm
+                    command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel)
+                    tou.pubCommand.publish(command)
+                    tou._rateHoriz.sleep()
+                    if tou.img_calc.distance > 100:
+                        command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel) #publish same command withous bias
+                        tou.pubCommand.publish(command)
+                        dt = 0.0015 * tou.img_calc.distance
+                        rospy.sleep(dt)  # sleep seconds
+
+                    command = "HOVER"
+                    tou.pubCommand.publish(command)
+                    tou._rateHover.sleep()
+                    ### END OF PLANAR CONTROL BLOCK
+
+                ### ANGULAR CONTROL BLOCK
+                if tou.is_visible:
+                    if abs(tou.img_calc.angle) <= 10:
+                        angular_vel = 0.03 * tou.img_calc.angle
+                    else:
+                        angular_vel = 0.01 * tou.img_calc.angle
+                    if angular_vel > 0.3: angular_vel = 0.3
+                    if angular_vel < -0.3: angular_vel = -0.3
+                    command = "SET_VELOCITY {} 0 0 0 0 {}".format(0, angular_vel)
+                    tou._pubCommand.publish(command)
+                    tou.sleep()
+                    if abs(tou.img_calc.angle) > 10:
+                        command = "SET_VELOCITY {} 0 0 0 0 {}".format(0, angular_vel) #publish same command withous bias
+                        tou._pubCommand.publish(command)
+                        dt = 0.007 * abs(tou.img_calc.angle)
+                        rospy.sleep(dt)  # sleep seconds
+
+                    command = "HOVER"
+                    tou._pubCommand.publish(command)
+                    tou._rateHover.sleep()
+                ### END OF ANGULAR CONTROL BLOCK
             else:
                 rospy.sleep(0.5)
     except rospy.ROSInterruptException:

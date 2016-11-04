@@ -7,7 +7,7 @@
     <param name="looprate" value="30" />
     <param name="outdoor" value="False" />
     <param name="flight_without_shell" value="True" />
-    <param name="altitude_max" value="700" />
+    <param name="altitude_max" value="2000" />
     <param name="altitude_min" value="50" />
     <param name="control_vz_max" value="2000" />
     <param name="control_yaw" value="9" />
