@@ -37,4 +37,6 @@
   </node>
   <node name="land_unit" pkg="ardrone_project" type="land_unit.py" output="screen">
   </node>
+  <node name="end_detection" pkg="ardrone_project" type="end_detection.py" output="screen">
+  </node>
 </launch>

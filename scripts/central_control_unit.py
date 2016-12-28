@@ -25,6 +25,7 @@ class Central_Control_Unit:
         rospy.Subscriber('Central_Control_Unit/enable', Bool, self.callbacEnable)
         rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
+        rospy.Subscriber('end_detection/is_end', Bool, self.callbackEnd)
 
         self.who_in_control = controlStatus[0]
         self.enable_toggle_control = False
@@ -51,6 +52,9 @@ class Central_Control_Unit:
         """
         self.path_visible = data.is_visible
         self.img_calc = data
+
+    def callbackEnd(self, msg):
+        self.end_visible = msg.data;
 
 
     def cleanup(self):
