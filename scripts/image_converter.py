@@ -27,17 +27,19 @@ class image_converter:
 
         self.image_pub_calc = rospy.Publisher("image_converter/calc", ImageCalc, queue_size=10)  # queue?
         self._is_visible = False
-        self._orientation_forward = True#np.ones((1,10), dtype=bool) #FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
+        self._orientation_forward = True#FORWARD direction if RED is on the RIGHT, initiation assumes forward direction
+
+        # np.ones((1,10), dtype=bool)
 
     def callback(self, data):
         img_calc = ImageCalc()
         time_stamp = data.header.stamp
         img_calc.time_stamp = time_stamp
 
-        #try:
-        cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
-        #except CvBridgeError as e:
-        #    print(e)
+        try:
+            cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+        except CvBridgeError as e:
+            print(e)
 
         # filtering noise
         kernel = np.ones((5, 5), np.float32) / 25
@@ -212,9 +214,9 @@ class image_converter:
             except:
                 img_calc.is_visible = False
             finally:
-                pass
-                #cv2.imshow('frame',cv_image)
-                #cv2.waitKey(1)
+                #pass
+                cv2.imshow('frame',cv_image)
+                cv2.waitKey(1)
 
         if (self._is_visible is not img_calc.is_visible):
             print("image_converter: Visibile = {}".format(img_calc.is_visible)) #print only when visibility changes
@@ -230,7 +232,7 @@ def main(args):
     except KeyboardInterrupt:
         print("Shutting down")
     except rospy.ROSInterruptException:
-        print("take_off_unit: ROSInterruptException")
+        print("image_converter: ROSInterruptException")
     finally:
         cv2.destroyAllWindows()
 
