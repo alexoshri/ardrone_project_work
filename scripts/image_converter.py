@@ -211,6 +211,10 @@ class image_converter:
 
             except:
                 img_calc.is_visible = False
+            finally:
+                pass
+                #cv2.imshow('frame',cv_image)
+                #cv2.waitKey(1)
 
         if (self._is_visible is not img_calc.is_visible):
             print("image_converter: Visibile = {}".format(img_calc.is_visible)) #print only when visibility changes

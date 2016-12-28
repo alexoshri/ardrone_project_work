@@ -76,7 +76,7 @@ if __name__ == "__main__":
                     if ccu.who_in_control is not controlStatus[2]:
                         ccu.who_in_control = controlStatus[2]
                         print("Central Unit: I gave control to Land Unit!")
-                elif ccu.path_visible: #and ccu.altitude > 1500 and ccu.img_calc.angle < 10 and ccu.img_calc.distance < 100:
+                elif ccu.path_visible and ccu.altitude > 1500 and ccu.img_calc.angle < 10 and ccu.img_calc.distance < 100:
                     #condition to give controol to follow controller
                     #in case drone sees the path and is well stabilized above it
                     ccu.pubEnableControl.publish(True)

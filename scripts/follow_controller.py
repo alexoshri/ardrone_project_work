@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 if controller.img_calc.distance > 100:
                     command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel) #publish same command withous bias
                     controller._pubCommand.publish(command)
-                    dt = 0.0005 * controller.img_calc.distance
+                    dt = 0.001 * controller.img_calc.distance
                     rospy.sleep(dt)  # sleep seconds
 
                 command = "HOVER"
@@ -89,7 +89,7 @@ if __name__ == "__main__":
                     y_vel = -float(controller.img_calc.arrow_y_forward) / float(norm) * vel
                     command = "SET_VELOCITY {} {} 0 0 0 0".format(y_vel, x_vel)
                     controller._pubCommand.publish(command)
-                    rospy.sleep(0.7)
+                    rospy.sleep(0.9)
 
                     command = "HOVER"
                     controller._pubCommand.publish(command)

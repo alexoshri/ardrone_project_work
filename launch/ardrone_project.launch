@@ -7,13 +7,19 @@
     <param name="looprate" value="30" />
     <param name="outdoor" value="False" />
     <param name="flight_without_shell" value="True" />
-    <param name="altitude_max" value="2000" />
+    <param name="indoor_altitude_max" value="1500" />
+    <param name="altitude_max" value="1500" />
     <param name="altitude_min" value="50" />
     <param name="control_vz_max" value="2000" />
     <param name="control_yaw" value="9" />
     <param name="indoor_control_vz_max" value="2000" />
     <param name="indoor_control_yaw" value="9" />
     <param name="control_level" value="1" />
+
+    <param name="flying_mode " value="0" />
+    <param name="detect_type" value="0" />
+    <param name="hovering_range" value="0" />
+
   </node>
   <node name="drop" pkg="topic_tools" type="drop" output="screen" args="/ardrone/bottom/image_raw 1 2"></node>
 

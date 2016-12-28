@@ -74,6 +74,7 @@ if __name__ == "__main__":
                 command = keyCommands[key]
                 print("received command from keyboard:" + "key: {0}, command: {1}".format(key,command) + "\n")
                 pub.publish(command)
+                if command == "LAND": pubEnableCentralUnit.publish(False)
 
         elif key in directCommands:
             if directCommands[key] == "DIRECT_EMERGENCY":
@@ -82,6 +83,7 @@ if __name__ == "__main__":
             elif directCommands[key] == "DIRECT_LAND":
                 print("received command from keyboard: DIRECT_LAND \n")
                 pubLand.publish(Empty())
+                pubEnableCentralUnit.publish(False)
             elif directCommands[key] == "DIRECT_TAKEOFF":
                 print("received command from keyboard: DIRECT_TAKEOFF \n")
                 pubTakeoff.publish(Empty())

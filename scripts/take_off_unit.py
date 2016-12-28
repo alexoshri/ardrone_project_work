@@ -16,7 +16,7 @@ class takeOffUnit:
         rospy.Subscriber('image_converter/calc', ImageCalc, self.callbackCalc)
 
         self.img_calc = ImageCalc() #elements in msg definition are assigned zero values by the default constructor.
-        self._rateCommand = rospy.Rate(1.5)
+        self._rateAng = rospy.Rate(1.5)
         self._rateHoriz = rospy.Rate(1.8)
         self._rateHover = rospy.Rate(1.5)  # 5Hz
 
@@ -44,7 +44,8 @@ class takeOffUnit:
         if not self.enableControl and enable_flag:
             self.pubCommand.publish("TAKEOFF")
             while self._droneStatus is not "Hovering":
-                rospy.sleep(0.2)
+                rospy.sleep(0.3)
+
 
             # takeoff complete - drone entered hovering state
             # TODO: set altitude max to a value greater than desired height (using rosparam)
@@ -89,7 +90,20 @@ if __name__ == "__main__":
                     command = "HOVER"
                     tou.pubCommand.publish(command)
                     tou._rateHover.sleep()
-                    ### END OF PLANAR CONTROL BLOCK
+                ### END OF PLANAR CONTROL BLOCK
+
+                ### FLIGHT UPWARD executed once in controller.FORWARD_RATIO iterations
+                if tou.upward_counter == 0 and tou.is_visible:
+                    tou.pubCommand.publish(command)
+                    rospy.sleep(0.3)
+
+                    command = "HOVER"
+                    tou.pubCommand.publish(command)
+                    tou._rateHover.sleep()
+                ### END OF FLIGHT UPWARD BLOCK
+
+                tou.upward_counter += 1
+                tou.upward_counter = tou.upward_counter % tou.UPWARD_RATIO
 
                 ### ANGULAR CONTROL BLOCK
                 if tou.is_visible:
@@ -100,16 +114,16 @@ if __name__ == "__main__":
                     if angular_vel > 0.3: angular_vel = 0.3
                     if angular_vel < -0.3: angular_vel = -0.3
                     command = "SET_VELOCITY {} 0 0 0 0 {}".format(0, angular_vel)
-                    tou._pubCommand.publish(command)
-                    tou.sleep()
+                    tou.pubCommand.publish(command)
+                    tou._rateAng.sleep()
                     if abs(tou.img_calc.angle) > 10:
                         command = "SET_VELOCITY {} 0 0 0 0 {}".format(0, angular_vel) #publish same command withous bias
-                        tou._pubCommand.publish(command)
+                        tou.pubCommand.publish(command)
                         dt = 0.007 * abs(tou.img_calc.angle)
                         rospy.sleep(dt)  # sleep seconds
 
                     command = "HOVER"
-                    tou._pubCommand.publish(command)
+                    tou.pubCommand.publish(command)
                     tou._rateHover.sleep()
                 ### END OF ANGULAR CONTROL BLOCK
             else:
