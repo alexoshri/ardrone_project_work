@@ -22,22 +22,8 @@
     -->
 
   </node>
-  <node name="drop" pkg="topic_tools" type="drop" output="screen" args="/ardrone/bottom/image_raw 1 2"></node>
 
-  <node name="keyboard_controller" pkg="ardrone_project" type="keyboard_controller.py" output="screen">
-  </node>
-  <node name="drone_controller" pkg="ardrone_project" type="drone_controller.py" output="screen">
-  </node>
-  <node name="image_converter" pkg="ardrone_project" type="image_converter.py" output="screen">
-  </node>
-  <node name="central_control_unit" pkg="ardrone_project" type="central_control_unit.py" output="screen">
-  </node>
-  <node name="follow_controller" pkg="ardrone_project" type="follow_controller.py" output="screen">
-  </node>
-  <node name="take_off_unit" pkg="ardrone_project" type="take_off_unit.py" output="screen">
-  </node>
-  <node name="land_unit" pkg="ardrone_project" type="land_unit.py" output="screen">
-  </node>
-  <node name="end_detection" pkg="ardrone_project" type="end_detection.py" output="screen">
-  </node>
+  <node name="drop" pkg="topic_tools" type="drop" output="screen" args="/ardrone/bottom/image_raw 1 2"></node>
+  <node name="image_converter" pkg="ardrone_project" type="image_converter.py" output="screen"></node>
+  <node name="end_detection" pkg="ardrone_project" type="end_detection.py" output="screen"></node>
 </launch>
