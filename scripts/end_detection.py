@@ -29,8 +29,8 @@ class end_detection:
 
         #yellow mask
         hsv = cv2.cvtColor(blur, cv2.COLOR_BGR2HSV)
-        lower_yellow = np.array([20, 150, 100])
-        upper_yellow = np.array([40, 255, 255])
+        lower_yellow = np.array([15, 100, 50])
+        upper_yellow = np.array([45, 255, 255])
         mask_y = cv2.inRange(hsv, lower_yellow, upper_yellow)
 
         closing_y = cv2.erode(mask_y, np.ones((30, 30), np.uint8), iterations=1)
@@ -41,10 +41,11 @@ class end_detection:
         self.is_end_pub.publish(is_end)
 
         #Visualization
-        #cv2.putText(dilation_y, 'num yellow: {}'.format(num_yellow), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
-        #cv2.imshow('frame',dilation_y)
-        #cv2.imshow('fre',blur)
-        #cv2.waitKey(1)
+        cv2.putText(dilation_y, 'num yellow: {}'.format(num_yellow), (w / 2, 100), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
+        cv2.putText(dilation_y, 'End Detection = {}'.format(is_end), (int(w / 4), 200), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
+        cv2.imshow('frame',dilation_y)
+        cv2.imshow('fre',cv_image)
+        cv2.waitKey(1)
 
 def main(args):
     ed = end_detection()
