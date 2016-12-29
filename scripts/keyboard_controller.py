@@ -7,10 +7,10 @@ from std_msgs.msg import String, Empty, Bool
 
 quitChar = 'q'
 keyCommands = {
-		'i':"SET_VELOCITY 0.1 0 0 0 0 0",
-		'k':"SET_VELOCITY -0.1 0 0 0 0 0",
-		'l':"SET_VELOCITY 0 0 0 0 0 -0.1",
-		'j':"SET_VELOCITY 0 0 0 0 0 0.1",
+                'i':"SET_VELOCITY 0.1 0 0 0 0 0",
+                'k':"SET_VELOCITY -0.1 0 0 0 0 0",
+                'l':"SET_VELOCITY 0 0 0 0 0 -0.1",
+                'j':"SET_VELOCITY 0 0 0 0 0 0.1",
                 'h':"SET_VELOCITY 0 0 0.3 0 0 0",
                 'b':"SET_VELOCITY 0 0 -0.3 0 0 0",
                 'y':"SET_VELOCITY 0 -0.1 0 0 0 0",

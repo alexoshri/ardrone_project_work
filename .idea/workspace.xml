@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="33f7b378-6453-4bfa-a15d-801eaa19714d" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/launch/drop.launch" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/image_converter.py" afterPath="$PROJECT_DIR$/scripts/image_converter.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/drone_controller.py" afterPath="$PROJECT_DIR$/scripts/drone_controller.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scripts/keyboard_controller.py" afterPath="$PROJECT_DIR$/scripts/keyboard_controller.py" />
     </list>
     <ignored path="ardrone_project_work.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -24,23 +24,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="follow_controller.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/follow_controller.py">
+      <file leaf-file-name="image_converter.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/image_converter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1050">
-              <caret line="121" column="48" selection-start-line="121" selection-start-column="48" selection-end-line="121" selection-end-column="48" />
-              <folding>
-                <element signature="e#47#67#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="791">
+              <caret line="218" column="16" selection-start-line="218" selection-start-column="16" selection-end-line="218" selection-end-column="16" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="image_converter.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/scripts/image_converter.py">
+      <file leaf-file-name="drone_controller.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/scripts/drone_controller.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1674">
-              <caret line="218" column="16" selection-start-line="218" selection-start-column="16" selection-end-line="218" selection-end-column="16" />
+            <state relative-caret-position="255">
+              <caret line="95" column="37" selection-start-line="95" selection-start-column="37" selection-end-line="95" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -59,7 +57,7 @@
       <file leaf-file-name="central_control_unit.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/central_control_unit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="270">
+            <state relative-caret-position="390">
               <caret line="30" column="42" selection-start-line="30" selection-start-column="42" selection-end-line="30" selection-end-column="42" />
               <folding>
                 <element signature="e#47#66#0" expanded="true" />
@@ -71,7 +69,7 @@
       <file leaf-file-name="end_detection.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/end_detection.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="239">
+            <state relative-caret-position="480">
               <caret line="32" column="47" selection-start-line="32" selection-start-column="47" selection-end-line="32" selection-end-column="47" />
               <folding />
             </state>
@@ -81,7 +79,7 @@
       <file leaf-file-name="take_off_unit.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/take_off_unit.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1274">
+            <state relative-caret-position="1410">
               <caret line="98" column="0" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
               <folding>
                 <element signature="e#47#67#0" expanded="true" />
@@ -110,7 +108,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="drop.launch" pinned="false" current-in-tab="true">
+      <file leaf-file-name="drop.launch" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/launch/drop.launch">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="90">
@@ -123,8 +121,8 @@
       <file leaf-file-name="keyboard_controller.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/keyboard_controller.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="58" column="96" selection-start-line="58" selection-start-column="96" selection-end-line="58" selection-end-column="96" />
+            <state relative-caret-position="-76">
+              <caret line="33" column="17" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -148,8 +146,6 @@
         <option value="$PROJECT_DIR$/msg/ImageCalc.msg" />
         <option value="$PROJECT_DIR$/scripts/take_off_unit" />
         <option value="$PROJECT_DIR$/scripts/land_unit.py" />
-        <option value="$PROJECT_DIR$/scripts/drone_controller.py" />
-        <option value="$PROJECT_DIR$/scripts/keyboard_controller.py" />
         <option value="$PROJECT_DIR$/launch/driver.launch" />
         <option value="$PROJECT_DIR$/scripts/follow_controller.py" />
         <option value="$PROJECT_DIR$/scripts/take_off_unit.py" />
@@ -158,6 +154,8 @@
         <option value="$PROJECT_DIR$/scripts/end_detection.py" />
         <option value="$PROJECT_DIR$/scripts/image_converter.py" />
         <option value="$PROJECT_DIR$/launch/drop.launch" />
+        <option value="$PROJECT_DIR$/scripts/drone_controller.py" />
+        <option value="$PROJECT_DIR$/scripts/keyboard_controller.py" />
       </list>
     </option>
   </component>
@@ -192,6 +190,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -255,7 +254,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -443,7 +441,14 @@
       <option name="project" value="LOCAL" />
       <updated>1482931967971</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Added launch file to run: play bag + drop + 2 image processing modules&#10;&#10;Image_converter minor changes">
+      <created>1482947229814</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1482947229814</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -484,7 +489,8 @@
     <MESSAGE value="integration of take off unit" />
     <MESSAGE value="commit bag files (using pycharm VCS)" />
     <MESSAGE value="added connection between end detection and central control unit.&#10;also included end detection unit to launch file&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="added connection between end detection and central control unit.&#10;also included end detection unit to launch file&#10;" />
+    <MESSAGE value="Added launch file to run: play bag + drop + 2 image processing modules&#10;&#10;Image_converter minor changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added launch file to run: play bag + drop + 2 image processing modules&#10;&#10;Image_converter minor changes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -503,9 +509,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
           <caret line="15" column="19" selection-start-line="15" selection-start-column="19" selection-end-line="15" selection-end-column="19" />
-          <folding>
-            <element signature="e#47#66#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -547,7 +550,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#47#67#0" expanded="true" />
+            <element signature="e#47#67#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -566,9 +569,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1275">
           <caret line="88" column="29" selection-start-line="88" selection-start-column="29" selection-end-line="88" selection-end-column="38" />
-          <folding>
-            <element signature="e#47#66#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -585,7 +585,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#47#67#0" expanded="true" />
+            <element signature="e#47#67#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -602,9 +602,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1680">
           <caret line="115" column="37" selection-start-line="115" selection-start-column="37" selection-end-line="115" selection-end-column="37" />
-          <folding>
-            <element signature="e#47#66#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -635,7 +632,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#47#67#0" expanded="true" />
+            <element signature="e#47#67#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -652,9 +649,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1680">
           <caret line="115" column="37" selection-start-line="115" selection-start-column="37" selection-end-line="115" selection-end-column="37" />
-          <folding>
-            <element signature="e#47#66#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -685,7 +679,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#47#67#0" expanded="true" />
+            <element signature="e#47#67#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -702,9 +696,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1680">
           <caret line="115" column="37" selection-start-line="115" selection-start-column="37" selection-end-line="115" selection-end-column="37" />
-          <folding>
-            <element signature="e#47#66#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -735,7 +726,7 @@
         <state relative-caret-position="1140">
           <caret line="80" column="25" selection-start-line="80" selection-start-column="25" selection-end-line="80" selection-end-column="25" />
           <folding>
-            <element signature="e#47#67#0" expanded="true" />
+            <element signature="e#47#67#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -752,9 +743,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1725">
           <caret line="115" column="37" selection-start-line="115" selection-start-column="37" selection-end-line="115" selection-end-column="37" />
-          <folding>
-            <element signature="e#47#66#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -785,7 +773,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#47#67#0" expanded="true" />
+            <element signature="e#47#67#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -802,9 +790,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1725">
           <caret line="115" column="37" selection-start-line="115" selection-start-column="37" selection-end-line="115" selection-end-column="37" />
-          <folding>
-            <element signature="e#47#66#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -820,7 +805,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#47#67#0" expanded="true" />
+            <element signature="e#47#67#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -833,37 +818,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/drone_controller.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="15">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-          <folding>
-            <element signature="e#47#66#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/follow_controller.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1050">
+        <state relative-caret-position="1755">
           <caret line="121" column="48" selection-start-line="121" selection-start-column="48" selection-end-line="121" selection-end-column="48" />
           <folding>
-            <element signature="e#47#67#0" expanded="true" />
+            <element signature="e#47#67#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/keyboard_controller.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="600">
-          <caret line="58" column="96" selection-start-line="58" selection-start-column="96" selection-end-line="58" selection-end-column="96" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/take_off_unit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1274">
+        <state relative-caret-position="1410">
           <caret line="98" column="0" selection-start-line="98" selection-start-column="0" selection-end-line="98" selection-end-column="0" />
           <folding>
             <element signature="e#47#67#0" expanded="true" />
@@ -881,7 +848,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/central_control_unit.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
+        <state relative-caret-position="390">
           <caret line="30" column="42" selection-start-line="30" selection-start-column="42" selection-end-line="30" selection-end-column="42" />
           <folding>
             <element signature="e#47#66#0" expanded="true" />
@@ -897,14 +864,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/image_converter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1674">
-          <caret line="218" column="16" selection-start-line="218" selection-start-column="16" selection-end-line="218" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/launch/ardrone_project.launch">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="510">
@@ -915,7 +874,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/end_detection.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
+        <state relative-caret-position="480">
           <caret line="32" column="47" selection-start-line="32" selection-start-column="47" selection-end-line="32" selection-end-column="47" />
           <folding />
         </state>
@@ -925,6 +884,30 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="6" column="0" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/image_converter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="791">
+          <caret line="218" column="16" selection-start-line="218" selection-start-column="16" selection-end-line="218" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/keyboard_controller.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-76">
+          <caret line="33" column="17" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/drone_controller.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="95" column="37" selection-start-line="95" selection-start-column="37" selection-end-line="95" selection-end-column="37" />
           <folding />
         </state>
       </provider>

@@ -21,11 +21,6 @@ droneStatus = {
 
 class droneController:
     def __init__(self):
-        self._debugCounter = 0
-        self._status_debug = None
-
-        self.zeroVelocity()
-
         rospy.init_node('drone_controller',anonymous = False)
         self._pubTwist = rospy.Publisher('/cmd_vel',Twist,queue_size = 50)
         self._rateTwist = rospy.Rate(50) #50Hz
@@ -35,7 +30,11 @@ class droneController:
         self._pubLand = rospy.Publisher('ardrone/land',Empty,queue_size = 1)
 
         rospy.Subscriber('drone_controller/com', String, self.callbackCommand)
-        rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)
+        rospy.Subscriber('ardrone/navdata', Navdata, self.callbackNavdata)  #we used drone controller unit also as a dubug unit to monitor drone state & battery
+
+        self.zeroVelocity()
+        self._status_debug = None
+        #self._debugCounter = 0
 
     def zeroVelocity(self):
         self._velocity = [0,0,0,0,0,0]
