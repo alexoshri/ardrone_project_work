@@ -110,8 +110,8 @@ class image_converter:
                 nearest_pt, _ = kmeans(nearest_pt, 1)
                 nearest_pt = nearest_pt[0]
 
-                NN_indices_out = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 140)
-                NN_indices_in = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 120)
+                NN_indices_out = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 100)
+                NN_indices_in = spatial.KDTree(line_yx).query_ball_point(nearest_pt, 80)
                 NN_extreme_indices = list(set(NN_indices_out) - set(NN_indices_in))
                 intersection_pixels = line_yx[NN_extreme_indices]
                 centroids, _ = kmeans(intersection_pixels, 2)
@@ -205,12 +205,11 @@ class image_converter:
                 #cv2.putText(res1, '#red points: {}'.format(num_red), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255), 2)
                 #cv2.putText(res1, '#is forward: {}'.format(self._orientation_forward), (w / 2, 150), cv2.FONT_ITALIC, 1, (255, 255, 255),2)
 
-                cv2.imshow('res1', res1)
+                #cv2.imshow('res1', res1)
                 #cv2.imshow('res2',res2)
                 #cv2.imshow('thin',thin_line_mask)
                 #cv2.imshow('frame',cv_image)
-                cv2.waitKey(1)
-
+                #cv2.waitKey(1)
             except:
                 img_calc.is_visible = False
             finally:
